@@ -26,7 +26,7 @@ set_property(TARGET KAI PROPERTY CXX_STANDARD 17)
 
 add_custom_command(TARGET KAI POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "C:/libtorch/lib"
-    $<TARGET_FILE_DIR:KAI>
-    COMMENT "Copiando DLLs..."
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "$<TARGET_FILE_DIR:KAI>/assets"
+    COMMENT "Copiando carpeta assets al directorio de salida..."
 )
