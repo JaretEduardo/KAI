@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KAI_UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1080" WindowStartupLocation="CenterScreen">
+        Title="KAI" Height="720" Width="1080" WindowStartupLocation="CenterScreen">
     <Grid>
 
     </Grid>
