@@ -1,88 +1,90 @@
 # KAI
 
-> **High-Performance C++ Deep Learning Engine for Forensic & Vision Tasks**
+> **Next-Gen AI Development Ecosystem & Digital Forensics Lab**
 
-![C++](https://img.shields.io/badge/Language-C++17-blue.svg)
-![LibTorch](https://img.shields.io/badge/Backend-LibTorch%20(PyTorch)-ee4c2c.svg)
+![C++](https://img.shields.io/badge/Engine-C++17-blue.svg)
+![C#](https://img.shields.io/badge/UI-WPF%20.NET%208-purple.svg)
+![LibTorch](https://img.shields.io/badge/Backend-LibTorch-ee4c2c.svg)
 ![CUDA](https://img.shields.io/badge/Acceleration-NVIDIA%20CUDA-76b900.svg)
 ![Status](https://img.shields.io/badge/Status-Active%20Dev-green.svg)
 
 ## 📖 About The Project
-**KAI (Knowledge & Artificial Intelligence)** is a modular Deep Learning engine built from scratch in C++ using the LibTorch ecosystem. Unlike Python-based scripts, KAI is designed for **performance, portability, and low-level control**, targeting cybersecurity and forensic analysis applications.
 
-Currently, it features a fully functional **Convolutional Neural Network (CNN)** module capable of real-time handwritten digit recognition (MNIST) with GPU acceleration.
+**KAI** is a professional-grade ecosystem designed to bridge the gap between high-performance Deep Learning research and practical cybersecurity application.
+
+Unlike standard Python notebooks, KAI utilizes a **Hybrid Architecture**:
+* **The Brain (Backend):** A raw C++17 engine utilizing LibTorch and CUDA for maximum training speed and memory efficiency.
+* **The Face (Frontend):** A modern, cyberpunk-aesthetic WPF interface that democratizes model creation, management, and forensic testing.
+
+Whether you are training a Vision Model to recognize handwriting or using NLP to de-obfuscate malicious code, KAI SUITE provides the specialized tools needed for the job.
 
 ## 🚀 Key Features
-* **Modular Architecture:** Clean separation between `Core` (Training/Optimization), `Models` (Architectures), and `Data` (Loaders).
-* **GPU Acceleration:** Automatic detection of NVIDIA CUDA hardware for high-speed training (50x faster than CPU).
-* **Interactive CLI:** Built-in command-line interface for:
-    * **Training Mode:** Trains models from scratch with real-time loss tracking.
-    * **Forensic Mode (Inference):** Loads pre-trained `.pt` models to classify unseen data.
-* **Visual Debugging:** Includes an ASCII-based tensor renderer to visualize what the neural network "sees" directly in the console.
 
-## 🛠️ Tech Stack
-* **Language:** C++ (Standard 17)
-* **Framework:** LibTorch (PyTorch C++ API)
-* **Build System:** CMake
-* **Version Control:** Git (Feature Branch Workflow)
+### 1. 🏭 The Training Factory
+Create neural networks without writing boilerplate code.
+* **Drag & Drop Datasets:** Seamlessly load training data folders.
+* **Live Metrics:** Real-time visualization of Loss and Accuracy curves.
+* **Custom Model Identity:** Name your output checkpoints (e.g., `vision_core_v2.pt`) directly from the UI.
+* **Hyperparameter Tuning:** Adjust Epochs, Batch Size, and Learning Rates on the fly.
 
-## 📂 Project Structure
-```text
-KAI/
-├── src/
-│   ├── Core/         # Engine logic (Trainer, Optimizer wrappers)
-│   ├── Models/       # Neural Architectures (VisionModel.h, XORModel.h)
-│   ├── Data/         # Dataset handlers
-│   └── main.cpp      # CLI Entry point
-├── assets/
-│   ├── datasets/     # Raw training data (MNIST)
-│   └── checkpoints/  # Saved model weights (.pt files)
-└── CMakeLists.txt    # Build configuration
-```
+### 2. 🧠 Model Repository (The Armory)
+A visual management system for your `.pt` files.
+* **Card View:** Browse your trained models with metadata (Accuracy, Date, Architecture).
+* **Benchmarking:** Compare model performance stats before deployment.
+* **Lifecycle Management:** Load, Retrain, or Delete models with one click.
+
+### 3. 🧪 Neural Lab (Testing Playground)
+A multimodal sandbox to validate your AI's intelligence.
+* **Universal Input:** Drag & drop Images, Text files, or Code scripts.
+* **Inference Engine:** Select any active brain and test it against real-world data instantly.
+* **Feedback Loop:** View raw tensor outputs, confidence scores, and syntax corrections.
+
+### 4. 🕵️ Intelligent Forensics
+Context-aware tools that automatically adapt based on the evidence type:
+* **For Images/Video:** Auto-enables **Super Resolution** (AI Upscaling), Face Recognition, and Object Detection.
+* **For Code/Text:** Auto-switches to **De-obfuscation**, Vulnerability Scanning, and Logic Summarization.
+
+## 🛠️ Tech Stack & Architecture
+
+**KAI** follows a strict separation of concerns to ensure scalability and performance:
+
+* **Frontend (UI Layer):** C# / WPF / XAML (MVVM Pattern)
+* **Interop Layer:** P/Invoke (Marshaling data between Managed and Unmanaged code)
+* **Backend (Core Engine):** C++17 / LibTorch (PyTorch C++ API) / CUDA
 
 ## ⚡ Getting Started
-Prerequisites
-Visual Studio 2022 (or generic C++ Compiler)
 
-LibTorch (Release Version)
-
-CUDA Toolkit (Optional, for GPU support)
+### Prerequisites
+* Visual Studio 2022
+* .NET 8.0 SDK or higher
+* LibTorch (Release Version - C++ ABI)
+* NVIDIA CUDA Toolkit (Optional, for GPU acceleration)
 
 ### Installation
-1. Clone the repo
 
-```text
-git clone [https://github.com/JaretEduardo/KAI.git](https://github.com/JaretEduardo/KAI.git)
-```
+1.  **Clone the Repository**
+    ```bash
+    git clone [https://github.com/JaretEduardo/KAI.git](https://github.com/JaretEduardo/KAI.git)
+    ```
 
-2. Configure with CMake Ensure CMAKE_PREFIX_PATH points to your LibTorch installation.
+2.  **Setup Backend (C++)**
+    * Configure CMake or Visual Studio to point to your LibTorch installation path.
+    * Build the Engine project in **Release** mode to generate `KAI_Engine.dll`.
 
-3. Build & Run Compile in Release mode for maximum performance.
-
-## 🕵️ Usage (Forensic Mode)
-Select Option 2 in the main menu to enter Forensic Mode. The engine will pick random samples from the Test Set and display the prediction alongside the visual input.
-
-```text
---- KAI VISION ---
-              @@@@
-            @@@@@@
-           @@@@ @@
-          @@@@
-         @@@@
-        @@@@
-       @@@@
-
-Real: 7
-KAI Prediction: 7
-[RESULT] CORRECT ✅
-```
+3.  **Setup Frontend (C#)**
+    * Ensure the UI project references the generated `.dll`.
+    * Run the application.
 
 ## 🗺️ Roadmap
-[x] Phase 1: Core Engine & Vision (Implemented CNN LeNet-5)
 
-[ ] Phase 2: NLP Module (Text processing for Log Analysis)
-
-[ ] Phase 3: Cybersecurity Suite (Malware pattern recognition)
+- [x] **Phase 1: Core Engine** (C++ CNN Implementation & CLI)
+- [x] **Phase 2: Visual Evolution** (WPF Integration & Dashboard Design)
+- [ ] **Phase 3: Forensic Suite** (Implementation of Super Resolution & NLP De-obfuscator)
+- [ ] **Phase 4: Deployment** (Export models to ONNX/TensorRT)
 
 ## 👤 Author
-Jaret Eduardo - Software Engineer / AI Developer
+
+**Jaret Eduardo** - *Software Engineer / AI Architect*
+
+---
+*Built with logic, powered by KAI.*
