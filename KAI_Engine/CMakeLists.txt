@@ -27,15 +27,15 @@ target_compile_definitions(KAI_Engine PRIVATE KAI_EXPORTS)
 add_custom_command(TARGET KAI_Engine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "$<TARGET_FILE:KAI_Engine>"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Debug/net8.0-windows/KAI_Engine.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/KAI_Engine.dll"
     
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "C:/libtorch/lib/torch_cpu.dll"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Debug/net8.0-windows/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/"
     
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "C:/libtorch/lib/c10.dll"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Debug/net8.0-windows/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/"
 
-    COMMENT "🚀 Desplegando DLLs al Frontend WPF..."
+    COMMENT "🚀 Desplegando DLLs al Frontend (RELEASE MODE)..."
 )
