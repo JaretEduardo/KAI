@@ -1,44 +1,62 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Microsoft.Win32;
 using KAI_UI.Services;
-using System.Windows;
+using System.Threading.Tasks;
 
 namespace KAI_UI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            CheckHardware();
+        }
 
+        private void CheckHardware()
+        {
             try
             {
-                // Llamamos a C++
                 int estado = KaiEngineService.InitEngine();
-
                 if (estado == 1)
-                    MessageBox.Show("Conexión Exitosa: KAI Engine detectó NVIDIA CUDA 🚀", "Sistema KAI");
+                {
+                    TxtHardwareStatus.Text = "NVIDIA CUDA 🟢";
+                    TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.LightGreen;
+                }
                 else
-                    MessageBox.Show("Conexión Exitosa: KAI Engine corriendo en CPU 🐢", "Sistema KAI");
+                {
+                    TxtHardwareStatus.Text = "CPU MODE 🟡";
+                    TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.Yellow;
+                }
             }
-            catch (System.DllNotFoundException)
+            catch
             {
-                MessageBox.Show("ERROR CRITICO: No se encuentra 'KAI_Engine.dll'. \n¿Compilaste el proyecto de C++?", "Error de Enlace");
+                TxtHardwareStatus.Text = "ERROR 🔴";
+                TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.Red;
             }
-            catch (System.Exception ex)
+        }
+
+        private async void BtnSelectFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFolderDialog();
+            if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show($"Error desconocido: {ex.Message}", "Fallo de Sistema");
+                string path = dialog.FolderName;
+
+                // Feedback visual inmediato
+                TxtAnalysisResult.Text = "Analizando estructura...";
+
+                // Ejecutamos la carga en segundo plano para no congelar la UI
+                await Task.Run(() =>
+                {
+                    // Llamamos a C++ (Esto disparara el ImageDataset y stb_image)
+                    // Nota: 0 epocas para solo probar carga
+                    KaiEngineService.TrainAutoML(path, 50, 0.001f);
+                });
+
+                // Simulación de respuesta (Ya que aun no tenemos return string desde C++)
+                // En el futuro, C++ nos devolverá "VISION" o "NLP"
+                TxtAnalysisResult.Text = $"Carpeta cargada: {System.IO.Path.GetFileName(path)}\n(Verifica la consola de Visual Studio para el conteo)";
             }
         }
     }
