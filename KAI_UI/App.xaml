@@ -3,5 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+
+        <Style x:Key="KaiNavButton" TargetType="RadioButton">
+            <Setter Property="GroupName" Value="MainMenu"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#8B9BB4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderThickness="0" Padding="20,0">
+                            <Grid>
+                                <Rectangle x:Name="Indicator" 
+                                           HorizontalAlignment="Left" 
+                                           Width="4" Height="30" 
+                                           Fill="#00D4FF" 
+                                           RadiusX="2" RadiusY="2"
+                                           Visibility="Collapsed">
+                                    <Rectangle.Effect>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="15" ShadowDepth="0"/>
+                                    </Rectangle.Effect>
+                                </Rectangle>
+
+                                <ContentPresenter VerticalAlignment="Center" Margin="15,0,0,0"/>
+                            </Grid>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Foreground" Value="#00D4FF"/>
+                                <Setter TargetName="Indicator" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="border" Property="Background" Value="#1A00D4FF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="border" Property="Background" Value="#1AFFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Application.Resources>
 </Application>

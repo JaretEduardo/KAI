@@ -6,9 +6,104 @@
         xmlns:local="clr-namespace:KAI_UI"
         mc:Ignorable="d"
         Title="KAI Engine" Height="720" Width="1280"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" 
+        Background="#FF05080F" 
+        ResizeMode="CanMinimize">
 
     <Grid>
+        <Border BorderBrush="#FF00D4FF" 
+                BorderThickness="2" 
+                CornerRadius="0,20,0,0"
+                Background="#FF09101A"
+                Width="279" Height="704" 
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" 
+                Margin="0,0,0,0">
+
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="5" Opacity="0.5"/>
+            </Border.Effect>
+
+            <Grid>
+                <StackPanel VerticalAlignment="Top">
+
+                    <StackPanel Margin="0,40,0,60" HorizontalAlignment="Center">
+                        <TextBlock Text="KAI" 
+                                   FontSize="65" 
+                                   FontWeight="Bold" 
+                                   Foreground="#00D4FF"
+                                   FontFamily="Segoe UI"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#00D4FF" BlurRadius="30" ShadowDepth="0" Opacity="0.7"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+
+                        <TextBlock Text="NEURAL ENGINE" 
+                                   FontSize="12" 
+                                   FontWeight="SemiBold"
+                                   Foreground="#8B9BB4" 
+                                   Margin="0,-8,0,0"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"/>
+                    </StackPanel>
+
+                    <RadioButton Style="{StaticResource KaiNavButton}" IsChecked="True" Click="BtnDashboard_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  Data="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z" />
+                            <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnTraining_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+                            <TextBlock Text="Training" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnModels_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="24" Height="24" Margin="0,0,15,0" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  Data="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M12,20C11.45,20 11,19.55 11,19V13H13V19C13,19.55 12.55,20 12,20M14,11H10V5C10,4.45 10.45,4 11,4H13C13.55,4 14,4.45 14,5V11M16.5,17C15.67,17 15,16.33 15,15.5C15,14.67 15.67,14 16.5,14C17.33,14 18,14.67 18,15.5C18,16.33 17.33,17 16.5,17M7.5,17C6.67,17 6,16.33 6,15.5C6,14.67 6.67,14 7.5,14C8.33,14 9,14.67 9,15.5C9,16.33 8.33,17 7.5,17M7.5,11C6.67,11 6,10.33 6,9.5C6,8.67 6.67,8 7.5,8C8.33,8 9,8.67 9,9.5C9,10.33 8.33,11 7.5,11M16.5,11C15.67,11 15,10.33 15,9.5C15,8.67 15.67,8 16.5,8C17.33,8 18,8.67 18,9.5C18,10.33 17.33,11 16.5,11Z" />
+                            <TextBlock Text="Models" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnNew_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                                  Data="M15.5,12C18,12 20,14 20,16.5C20,17.38 19.75,18.21 19.31,18.9L22.39,22L21,23.39L17.88,20.32C17.19,20.75 16.37,21 15.5,21C13,21 11,19 11,16.5C11,14 13,12 15.5,12M15.5,14A2.5,2.5 0 0,0 13,16.5A2.5,2.5 0 0,0 15.5,19A2.5,2.5 0 0,0 18,16.5A2.5,2.5 0 0,0 15.5,14M10,4A4,4 0 0,1 14,8C14,8.91 13.69,9.75 13.18,10.43C12.32,10.75 11.55,11.26 10.91,11.9L10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M2,20V18C2,15.88 5.31,14.14 9.5,14C9.18,14.78 9,15.62 9,16.5C9,17.79 9.38,19 10,20H2Z" />
+                            <TextBlock Text="Forensics" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                </StackPanel>
+
+                <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnSettings_Click" VerticalAlignment="Bottom" Margin="0,0,0,30">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
+                              Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.35 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.35 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.04 4.95,18.95L7.44,17.95C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.95L19.05,18.95C19.27,19.04 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </RadioButton>
+
+            </Grid>
+        </Border>
+
+        <Grid Margin="320,20,20,20">
+            <TextBlock Text="Ready for Dashboard content..." 
+                       Foreground="#333" 
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"/>
+        </Grid>
 
     </Grid>
 </Window>
