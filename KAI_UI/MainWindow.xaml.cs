@@ -1,63 +1,72 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using Microsoft.Win32;
-using KAI_UI.Services;
 using System.Threading.Tasks;
+using KAI_UI.Services;
+using KAI_UI.ViewModels;
 
 namespace KAI_UI
 {
     public partial class MainWindow : Window
     {
+        private readonly MainViewModel _mainRouter;
+
         public MainWindow()
         {
             InitializeComponent();
-            CheckHardware();
-        }
 
-        private void CheckHardware()
-        {
+            _mainRouter = new MainViewModel();
+
+            DataContext = _mainRouter;
+
             try
             {
-                int estado = KaiEngineService.InitEngine();
-                if (estado == 1)
-                {
-                    TxtHardwareStatus.Text = "NVIDIA CUDA 🟢";
-                    TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.LightGreen;
-                }
-                else
-                {
-                    TxtHardwareStatus.Text = "CPU MODE 🟡";
-                    TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.Yellow;
-                }
+                KaiEngineService.InitEngine();
             }
             catch
             {
-                TxtHardwareStatus.Text = "ERROR 🔴";
-                TxtHardwareStatus.Foreground = System.Windows.Media.Brushes.Red;
             }
         }
 
-        private async void BtnSelectFolder_Click(object sender, RoutedEventArgs e)
+
+        private void BtnDashboard_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFolderDialog();
-            if (dialog.ShowDialog() == true)
-            {
-                string path = dialog.FolderName;
+            _mainRouter.CurrentView = _mainRouter.DashboardVM;
+        }
 
-                // Feedback visual inmediato
-                TxtAnalysisResult.Text = "Analizando estructura...";
+        private void BtnTraining_Click(object sender, RoutedEventArgs e)
+        {
+            _mainRouter.CurrentView = _mainRouter.TrainingVM;
+        }
 
-                // Ejecutamos la carga en segundo plano para no congelar la UI
-                await Task.Run(() =>
-                {
-                    // Llamamos a C++ (Esto disparara el ImageDataset y stb_image)
-                    // Nota: 0 epocas para solo probar carga
-                    KaiEngineService.TrainAutoML(path, 50, 0.001f);
-                });
+        private void BtnModels_Click(object sender, RoutedEventArgs e)
+        {
+            _mainRouter.CurrentView = _mainRouter.ModelsVM;
+        }
 
-                // Simulación de respuesta (Ya que aun no tenemos return string desde C++)
-                // En el futuro, C++ nos devolverá "VISION" o "NLP"
-                TxtAnalysisResult.Text = $"Carpeta cargada: {System.IO.Path.GetFileName(path)}\n(Verifica la consola de Visual Studio para el conteo)";
-            }
+        private void BtnNew_Click(object sender, RoutedEventArgs e)
+        {
+            _mainRouter.CurrentView = _mainRouter.ForensicsVM;
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            _mainRouter.CurrentView = _mainRouter.SettingsVM;
+        }
+
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
