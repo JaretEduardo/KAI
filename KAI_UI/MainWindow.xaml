@@ -4,11 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KAI_UI"
+        
+        xmlns:vm="clr-namespace:KAI_UI.ViewModels"
+        xmlns:v="clr-namespace:KAI_UI.Views"
+        
         mc:Ignorable="d"
         Title="KAI Engine" Height="720" Width="1280"
         WindowStartupLocation="CenterScreen" 
         Background="#FF05080F" 
         ResizeMode="CanMinimize">
+
+    <Window.Resources>
+
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <v:DashboardView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:TrainingViewModel}">
+            <v:TrainingView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ModelsViewModel}">
+            <v:ModelsView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ForensicsViewModel}">
+            <v:ForensicsView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <v:SettingsView/>
+        </DataTemplate>
+
+    </Window.Resources>
 
     <Grid>
         <Border BorderBrush="#FF00D4FF" 
@@ -98,12 +126,7 @@
             </Grid>
         </Border>
 
-        <Grid Margin="320,20,20,20">
-            <TextBlock Text="Ready for Dashboard content..." 
-                       Foreground="#333" 
-                       VerticalAlignment="Center" 
-                       HorizontalAlignment="Center"/>
-        </Grid>
+        <ContentControl Content="{Binding CurrentView}" Margin="320,20,20,20"/>
 
     </Grid>
 </Window>
