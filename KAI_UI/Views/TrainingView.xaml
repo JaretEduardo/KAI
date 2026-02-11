@@ -207,29 +207,47 @@
                             <Border/>
                         </UniformGrid>
 
-                        <Viewbox Stretch="Fill" RenderTransformOrigin="0.5,0.5">
-                            <Viewbox.RenderTransform>
-                                <ScaleTransform ScaleY="-1"/>
-                            </Viewbox.RenderTransform>
+                        <Viewbox Stretch="Fill">
+                            <Grid Height="100">
 
-                            <Grid Width="100" Height="100">
-                                <Polyline Points="{Binding LossPoints}"
+                                <Rectangle Width="50" Height="100" Fill="Transparent" Visibility="Hidden"/>
+
+                                <Polygon Points="{Binding LossFillPoints}" StrokeThickness="0">
+                                    <Polygon.Fill>
+                                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                            <GradientStop Color="#4DFF4444" Offset="0"/>
+                                            <GradientStop Color="#00FF4444" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Polygon.Fill>
+                                </Polygon>
+
+                                <Polygon Points="{Binding AccuracyFillPoints}" StrokeThickness="0">
+                                    <Polygon.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#4D00D4FF" Offset="0"/>
+                                            <GradientStop Color="#0000D4FF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Polygon.Fill>
+                                </Polygon>
+
+                                <Polyline Points="{Binding LossPoints}" 
                                           Stroke="#FF4444" 
-                                          StrokeThickness="2"
+                                          StrokeThickness="0.2" 
                                           StrokeLineJoin="Round">
                                     <Polyline.Effect>
-                                        <DropShadowEffect Color="#FF4444" BlurRadius="10" ShadowDepth="0"/>
+                                        <DropShadowEffect Color="#FF4444" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
                                     </Polyline.Effect>
                                 </Polyline>
 
-                                <Polyline Points="{Binding AccuracyPoints}"
+                                <Polyline Points="{Binding AccuracyPoints}" 
                                           Stroke="#00D4FF" 
-                                          StrokeThickness="2"
+                                          StrokeThickness="0.2" 
                                           StrokeLineJoin="Round">
                                     <Polyline.Effect>
-                                        <DropShadowEffect Color="#00D4FF" BlurRadius="10" ShadowDepth="0"/>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
                                     </Polyline.Effect>
                                 </Polyline>
+
                             </Grid>
                         </Viewbox>
 

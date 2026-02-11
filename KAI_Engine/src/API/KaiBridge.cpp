@@ -10,6 +10,10 @@
 #include "Data/ImageDataset.h"
 #include "Models/SimpleCNN.h"
 
+#include <algorithm>
+#include <random>
+#include <numeric>
+
 #ifdef KAI_EXPORTS
 #define KAI_API __declspec(dllexport)
 #else
@@ -52,9 +56,10 @@ extern "C" {
                 device = torch::Device(torch::kCUDA);
             }
 
-            LogToUI("\n[KAI DLL] --- INICIANDO ENTRENAMIENTO ---");
+            LogToUI("\n[KAI DLL] --- INICIANDO ENTRENAMIENTO (VRAM CACHED) ---");
             LogToUI("[KAI DLL] Target: " + outPath);
 
+            LogToUI("[KAI DLL] Leyendo imagenes del disco...");
             auto dataset = ImageDataset(path, 64);
             auto dataset_size = dataset.size().value();
 
@@ -66,50 +71,76 @@ extern "C" {
             int num_classes = dataset.getClassMap().size();
             LogToUI("[KAI DLL] Clases: " + std::to_string(num_classes) + " | Imagenes: " + std::to_string(dataset_size));
 
+            LogToUI("[KAI DLL] Subiendo dataset a la GPU (Esto puede tardar unos segundos)...");
+
+            std::vector<torch::Tensor> all_images;
+            std::vector<torch::Tensor> all_targets;
+            all_images.reserve(dataset_size);
+            all_targets.reserve(dataset_size);
+
+            for (size_t i = 0; i < dataset_size; ++i) {
+                try {
+                    auto sample = dataset.get(i);
+                    all_images.push_back(sample.data);
+                    all_targets.push_back(sample.target);
+                }
+                catch (...) { continue; }
+            }
+
+            auto full_images_tensor = torch::stack(all_images).to(device);
+            auto full_targets_tensor = torch::stack(all_targets).to(device);
+
+            LogToUI("[KAI DLL] Dataset en VRAM. Iniciando bucle ultrarrapido...");
+
             SimpleCNN model(num_classes);
             model->to(device);
             model->train();
 
             torch::optim::Adam optimizer(model->parameters(), torch::optim::AdamOptions(learning_rate));
 
-            int batch_size = 4;
+            std::vector<size_t> indices(dataset_size);
+            std::iota(indices.begin(), indices.end(), 0);
+            std::random_device rd;
+            std::mt19937 g(rd());
+
+            int batch_size = 64;
+            int num_batches = dataset_size / batch_size;
+            if (num_batches == 0) num_batches = 1;
 
             for (int epoch = 1; epoch <= epochs; ++epoch) {
+
+                std::shuffle(indices.begin(), indices.end(), g);
+
+                auto indices_tensor = torch::from_blob(indices.data(), { (long)dataset_size }, torch::kLong).to(device);
+
+                auto shuffled_images = full_images_tensor.index_select(0, indices_tensor);
+                auto shuffled_targets = full_targets_tensor.index_select(0, indices_tensor);
+
                 float epoch_loss = 0.0;
                 int batches_processed = 0;
 
-                std::vector<torch::Tensor> batch_images;
-                std::vector<torch::Tensor> batch_targets;
+                for (int b = 0; b < num_batches; ++b) {
 
-                for (size_t i = 0; i < dataset_size; ++i) {
-                    try {
-                        auto sample = dataset.get(i);
-                        batch_images.push_back(sample.data);
-                        batch_targets.push_back(sample.target);
+                    int start_idx = b * batch_size;
+                    int end_idx = start_idx + batch_size;
+                    if (end_idx > dataset_size) end_idx = dataset_size;
 
-                        if (batch_images.size() == batch_size || i == dataset_size - 1) {
-                            auto imgs = torch::stack(batch_images).to(device);
-                            auto lbls = torch::stack(batch_targets).to(device);
+                    auto batch_imgs = shuffled_images.slice(0, start_idx, end_idx);
+                    auto batch_lbls = shuffled_targets.slice(0, start_idx, end_idx);
 
-                            optimizer.zero_grad();
-                            auto output = model->forward(imgs);
-                            auto loss = torch::nn::functional::cross_entropy(output, lbls);
-                            loss.backward();
-                            optimizer.step();
+                    optimizer.zero_grad();
+                    auto output = model->forward(batch_imgs);
+                    auto loss = torch::nn::functional::cross_entropy(output, batch_lbls);
+                    loss.backward();
+                    optimizer.step();
 
-                            epoch_loss += loss.item<float>();
-                            batches_processed++;
-
-                            batch_images.clear();
-                            batch_targets.clear();
-                        }
-                    }
-                    catch (...) {
-                    }
+                    epoch_loss += loss.item<float>();
+                    batches_processed++;
                 }
 
+                float avg_loss = (batches_processed > 0) ? (epoch_loss / batches_processed) : 0.0f;
                 std::string msg = "Epoca [" + std::to_string(epoch) + "/" + std::to_string(epochs) +
-                    "] Loss: " + std::to_string(epoch_loss / batches_processed);
+                    "] Loss: " + std::to_string(avg_loss);
                 LogToUI(msg);
             }
 
@@ -123,6 +154,9 @@ extern "C" {
             std::string err = "[ERROR CRITICO]: ";
             err += e.what();
             LogToUI(err);
+        }
+        catch (...) {
+            LogToUI("[ERROR CRITICO] Excepcion desconocida.");
         }
     }
 
