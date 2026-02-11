@@ -197,7 +197,7 @@
                     </StackPanel>
                 </Grid>
 
-                <Border Grid.Row="1" Margin="0,15,0,0" Background="#05000000" BorderBrush="#2200D4FF" BorderThickness="1" CornerRadius="10">
+                <Border Grid.Row="1" Margin="0,15,0,0" Background="#05000000" BorderBrush="#2200D4FF" BorderThickness="1" CornerRadius="10" ClipToBounds="True">
                     <Grid>
                         <UniformGrid Columns="1" Rows="5">
                             <Border BorderBrush="#1100D4FF" BorderThickness="0,0,0,1"/>
@@ -206,7 +206,40 @@
                             <Border BorderBrush="#1100D4FF" BorderThickness="0,0,0,1"/>
                             <Border/>
                         </UniformGrid>
-                        <TextBlock Text="[ Waiting for training data... ]" Foreground="#334455" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+
+                        <Viewbox Stretch="Fill" RenderTransformOrigin="0.5,0.5">
+                            <Viewbox.RenderTransform>
+                                <ScaleTransform ScaleY="-1"/>
+                            </Viewbox.RenderTransform>
+
+                            <Grid Width="100" Height="100">
+                                <Polyline Points="{Binding LossPoints}"
+                                          Stroke="#FF4444" 
+                                          StrokeThickness="2"
+                                          StrokeLineJoin="Round">
+                                    <Polyline.Effect>
+                                        <DropShadowEffect Color="#FF4444" BlurRadius="10" ShadowDepth="0"/>
+                                    </Polyline.Effect>
+                                </Polyline>
+
+                                <Polyline Points="{Binding AccuracyPoints}"
+                                          Stroke="#00D4FF" 
+                                          StrokeThickness="2"
+                                          StrokeLineJoin="Round">
+                                    <Polyline.Effect>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="10" ShadowDepth="0"/>
+                                    </Polyline.Effect>
+                                </Polyline>
+                            </Grid>
+                        </Viewbox>
+
+                        <TextBlock Text="[ Waiting for training data... ]" 
+                                   Foreground="#334455" 
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center" 
+                                   FontSize="14">
+                            <TextBlock.Opacity>0.3</TextBlock.Opacity>
+                        </TextBlock>
                     </Grid>
                 </Border>
 
