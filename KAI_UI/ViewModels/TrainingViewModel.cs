@@ -70,7 +70,7 @@ namespace KAI_UI.ViewModels
         {
             try
             {
-                var regex = new Regex(@".*Epoca \[(\d+)/(\d+)\] Loss: ([\d\.,]+)");
+                var regex = new Regex(@".*Epoch \[(\d+)/(\d+)\] Loss: ([\d\.,]+)");
                 var match = regex.Match(message);
 
                 if (match.Success)

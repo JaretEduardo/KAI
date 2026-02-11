@@ -39,7 +39,7 @@ extern "C" {
     KAI_API int InitEngine() {
 
         if (torch::cuda::is_available()) {
-            LogToUI("[KAI DLL] GPU NVIDIA Detectada.");
+            LogToUI("[KAI DLL] NVIDIA GPU Detected.");
             return 1;
         }
         LogToUI("[KAI DLL] CPU Mode.");
@@ -56,22 +56,22 @@ extern "C" {
                 device = torch::Device(torch::kCUDA);
             }
 
-            LogToUI("\n[KAI DLL] --- INICIANDO ENTRENAMIENTO (VRAM CACHED) ---");
+            LogToUI("\n[KAI DLL] --- STARTING TRAINING (VRAM CACHED) ---");
             LogToUI("[KAI DLL] Target: " + outPath);
 
-            LogToUI("[KAI DLL] Leyendo imagenes del disco...");
+            LogToUI("[KAI DLL] Reading images from the disc...");
             auto dataset = ImageDataset(path, 64);
             auto dataset_size = dataset.size().value();
 
             if (dataset_size == 0) {
-                LogToUI("[ERROR] No hay datos.");
+                LogToUI("[ERROR] There is no data.");
                 return;
             }
 
             int num_classes = dataset.getClassMap().size();
-            LogToUI("[KAI DLL] Clases: " + std::to_string(num_classes) + " | Imagenes: " + std::to_string(dataset_size));
+            LogToUI("[KAI DLL] Classes: " + std::to_string(num_classes) + " | Images: " + std::to_string(dataset_size));
 
-            LogToUI("[KAI DLL] Subiendo dataset a la GPU (Esto puede tardar unos segundos)...");
+            LogToUI("[KAI DLL] Uploading dataset to GPU (This may take a few seconds)...");
 
             std::vector<torch::Tensor> all_images;
             std::vector<torch::Tensor> all_targets;
@@ -90,7 +90,7 @@ extern "C" {
             auto full_images_tensor = torch::stack(all_images).to(device);
             auto full_targets_tensor = torch::stack(all_targets).to(device);
 
-            LogToUI("[KAI DLL] Dataset en VRAM. Iniciando bucle ultrarrapido...");
+            LogToUI("[KAI DLL] Dataset in VRAM. Starting ultra-fast loop...");
 
             SimpleCNN model(num_classes);
             model->to(device);
@@ -139,24 +139,24 @@ extern "C" {
                 }
 
                 float avg_loss = (batches_processed > 0) ? (epoch_loss / batches_processed) : 0.0f;
-                std::string msg = "Epoca [" + std::to_string(epoch) + "/" + std::to_string(epochs) +
+                std::string msg = "Epoch [" + std::to_string(epoch) + "/" + std::to_string(epochs) +
                     "] Loss: " + std::to_string(avg_loss);
                 LogToUI(msg);
             }
 
-            LogToUI("[KAI DLL] Guardando modelo...");
+            LogToUI("[KAI DLL] Saving model...");
             torch::save(model, outPath);
-            LogToUI("[KAI DLL] Modelo guardado EXITOSAMENTE.");
+            LogToUI("[KAI DLL] Model saved SUCCESSFULLY.");
             LogToUI("TRAINING_COMPLETE");
 
         }
         catch (const std::exception& e) {
-            std::string err = "[ERROR CRITICO]: ";
+            std::string err = "[CRITICAL ERROR]: ";
             err += e.what();
             LogToUI(err);
         }
         catch (...) {
-            LogToUI("[ERROR CRITICO] Excepcion desconocida.");
+            LogToUI("[CRITICAL ERROR] Unknown exception.");
         }
     }
 
