@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAI_UI.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,24 @@ namespace KAI_UI.Views
         public TrainingView()
         {
             InitializeComponent();
+        }
+
+        private void Border_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (files != null && files.Length > 0)
+                {
+                    string path = files[0];
+
+                    if (DataContext is TrainingViewModel vm)
+                    {
+                        vm.SetDatasetPath(path);
+                    }
+                }
+            }
         }
     }
 }
