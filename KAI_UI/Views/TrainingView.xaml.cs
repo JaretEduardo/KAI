@@ -31,17 +31,19 @@ namespace KAI_UI.Views
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
                 if (files != null && files.Length > 0)
                 {
-                    string path = files[0];
-
                     if (DataContext is TrainingViewModel vm)
                     {
-                        vm.SetDatasetPath(path);
+                        vm.SetDatasetPath(files[0]);
                     }
                 }
             }
+        }
+
+        private void LogText_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            LogScroller.ScrollToBottom();
         }
     }
 }

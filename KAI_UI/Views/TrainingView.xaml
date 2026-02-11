@@ -161,10 +161,10 @@
 
                 <StackPanel Grid.Row="2" Margin="0,0,0,25">
                     <TextBlock Text="2. Output Model Name (.pt)" Foreground="#8B9BB4" Margin="0,0,0,8"/>
-                    <TextBox Style="{StaticResource NeonTextBoxStyle}" FontSize="14"/>
+                    <TextBox Style="{StaticResource NeonTextBoxStyle}" Text="{Binding ModelName, UpdateSourceTrigger=PropertyChanged}" FontSize="14"/>
                 </StackPanel>
 
-                <Button Grid.Row="3" Content="START TRAINING" Style="{StaticResource NeonButtonStyle}" Height="50" FontSize="16" FontWeight="Bold">
+                <Button Grid.Row="3" Content="START TRAINING" Command="{Binding StartTrainingCommand}" Style="{StaticResource NeonButtonStyle}" Height="50" FontSize="16" FontWeight="Bold">
                     <Button.Effect>
                         <DropShadowEffect Color="#00D4FF" BlurRadius="20" ShadowDepth="0" Opacity="0.4"/>
                     </Button.Effect>
@@ -219,15 +219,61 @@
                     <TextBlock Text="System Logs" Foreground="#8B9BB4" FontSize="12" Margin="0,0,0,5"/>
 
                     <Border Grid.Row="1" Background="#FF050505" BorderBrush="#3300D4FF" BorderThickness="1" CornerRadius="8">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10">
-                            <TextBlock FontFamily="Consolas, Courier New" FontSize="12" TextWrapping="Wrap">
-                                <Run Text="> [INFO] KAI Engine initialized..." Foreground="#00D4FF"/>
-                                <LineBreak/>
-                                <Run Text="> [INFO] GPU detected: RTX 4090" Foreground="#00D4FF"/>
-                                <LineBreak/>
-                                <Run Text="> [WAIT] Waiting for dataset selection..." Foreground="#888888"/>
-                                <LineBreak/>
-                                <Run Text="> _" Foreground="#00D4FF" FontWeight="Bold"/></TextBlock>
+                        <ScrollViewer x:Name="LogScroller" VerticalScrollBarVisibility="Auto" Margin="10">
+
+                            <ScrollViewer.Resources>
+
+                                <Style x:Key="ScrollThumb" TargetType="{x:Type Thumb}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                <Border x:Name="thumbBorder" Background="#3300D4FF" CornerRadius="4"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="thumbBorder" Property="Background" Value="#FF00D4FF"/>
+                                                        <Setter TargetName="thumbBorder" Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect Color="#00D4FF" BlurRadius="8" ShadowDepth="0"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="IsDragging" Value="True">
+                                                        <Setter TargetName="thumbBorder" Property="Background" Value="#FFFFFF"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+
+                                <Style TargetType="{x:Type ScrollBar}">
+                                    <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+                                    <Setter Property="Foreground" Value="#3300D4FF" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Width" Value="8" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                                <Grid x:Name="GridRoot" Width="8" Background="{TemplateBinding Background}">
+                                                    <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                                                        <Track.Thumb>
+                                                            <Thumb Style="{StaticResource ScrollThumb}" />
+                                                        </Track.Thumb>
+                                                    </Track>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+
+                            </ScrollViewer.Resources>
+
+                            <TextBlock Text="{Binding LogOutput}" 
+                                           SizeChanged="LogText_SizeChanged"
+                                           FontFamily="Consolas, Courier New" 
+                                           FontSize="12" 
+                                           Foreground="#00D4FF"
+                                           TextWrapping="Wrap"/>
                         </ScrollViewer>
                     </Border>
                 </Grid>
