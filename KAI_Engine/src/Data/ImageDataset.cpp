@@ -13,7 +13,7 @@ ImageDataset::ImageDataset(const std::string& root, int image_size)
     : target_size(image_size) {
 
     if (!fs::exists(root)) {
-        std::cerr << "ERROR: La carpeta del dataset no existe: " << root << std::endl;
+        std::cerr << "ERROR: The dataset folder does not exist: " << root << std::endl;
         return;
     }
 
@@ -35,7 +35,7 @@ ImageDataset::ImageDataset(const std::string& root, int image_size)
         }
     }
 
-    std::cout << "[ImageDataset] Cargadas " << data.size() << " imagenes en " << classMap.size() << " clases." << std::endl;
+    std::cout << "[ImageDataset] Loaded " << data.size() << " images in " << classMap.size() << " classes." << std::endl;
 }
 
 torch::data::Example<> ImageDataset::get(size_t index) {
@@ -57,7 +57,7 @@ torch::Tensor ImageDataset::load_image(const std::string& path) {
     unsigned char* img_data = stbi_load(path.c_str(), &width, &height, &channels, 3);
 
     if (!img_data) {
-        std::cerr << "ERROR: No se pudo cargar la imagen: " << path << std::endl;
+        std::cerr << "ERROR: Image could not be loaded: " << path << std::endl;
         return torch::zeros({ 3, target_size, target_size });
     }
 

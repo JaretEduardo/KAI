@@ -37,5 +37,13 @@ add_custom_command(TARGET KAI_Engine POST_BUILD
     "C:/libtorch/lib/c10.dll"
     "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/"
 
-    COMMENT "🚀 Desplegando DLLs al Frontend (RELEASE MODE)..."
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "C:/libtorch/lib/libiomp5md.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "C:/libtorch/lib/torch.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../KAI_UI/bin/Release/net8.0-windows/"
+
+    COMMENT "🚀 Desplegando TODAS las dependencias de LibTorch..."
 )

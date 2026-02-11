@@ -18,14 +18,6 @@ namespace KAI_UI
             _mainRouter = new MainViewModel();
 
             DataContext = _mainRouter;
-
-            try
-            {
-                KaiEngineService.InitEngine();
-            }
-            catch
-            {
-            }
         }
 
 
