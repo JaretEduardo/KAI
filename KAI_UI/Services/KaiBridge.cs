@@ -20,7 +20,7 @@ namespace KAI_UI.Services
         public static extern int InitEngine();
 
         [DllImport("KAI_Engine.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        private static extern void TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons);
+        private static extern void TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, [MarshalAs(UnmanagedType.I1)] bool useEarlyStopping, float targetLoss);
 
         public static void Initialize(LogCallback callbackAction)
         {
@@ -41,11 +41,11 @@ namespace KAI_UI.Services
             }
         }
 
-        public static Task TrainAsync(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons)
+        public static Task TrainAsync(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, bool useEarlyStopping, float targetLoss)
         {
             return Task.Run(() =>
             {
-                TrainAutoML(datasetPath, outputPath, epochs, learningRate, batchSize, baseFilters, hiddenNeurons);
+                TrainAutoML(datasetPath, outputPath, epochs, learningRate, batchSize, baseFilters, hiddenNeurons, useEarlyStopping, targetLoss);
             });
         }
     }

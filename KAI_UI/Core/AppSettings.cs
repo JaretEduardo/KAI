@@ -47,6 +47,20 @@ namespace KAI_UI.Core
             set { _hiddenNeurons = value; OnPropertyChanged(nameof(HiddenNeurons)); Save(); }
         }
 
+        private bool _useEarlyStopping = false;
+        public bool UseEarlyStopping
+        {
+            get => _useEarlyStopping;
+            set { _useEarlyStopping = value; OnPropertyChanged(nameof(UseEarlyStopping)); Save(); }
+        }
+
+        private float _targetLoss = 0.05f;
+        public float TargetLoss
+        {
+            get => _targetLoss;
+            set { _targetLoss = value; OnPropertyChanged(nameof(TargetLoss)); Save(); }
+        }
+
         public void Save()
         {
             if (!IsSavingEnabled) return;
@@ -84,6 +98,8 @@ namespace KAI_UI.Core
             BatchSize = 64;
             BaseFilters = 32;
             HiddenNeurons = 512;
+            UseEarlyStopping = false;
+            TargetLoss = 0.05f;
 
             IsSavingEnabled = true;
             Save();

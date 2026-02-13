@@ -8,6 +8,43 @@
              Background="Transparent">
 
     <UserControl.Resources>
+
+        <Style x:Key="NeonCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="checkBoxBorder" Width="22" Height="22" 
+                                    BorderBrush="#00D4FF" BorderThickness="2" 
+                                    CornerRadius="5" Background="#FF1A1F2B" 
+                                    VerticalAlignment="Center">
+                                <Path x:Name="checkMark" Data="M4,11 L9,16 L18,5" 
+                                      Stroke="#00D4FF" StrokeThickness="3" 
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                                      StrokeLineJoin="Round" 
+                                      Visibility="Collapsed">
+                                    <Path.Effect>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0"/>
+                                    </Path.Effect>
+                                </Path>
+                            </Border>
+                            <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="checkMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="checkBoxBorder" Property="Background" Value="#3300D4FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <Style x:Key="NeonCardStyle" TargetType="Border">
             <Setter Property="Background" Value="#FF09101A"/>
             <Setter Property="BorderBrush" Value="#FF00D4FF"/>
@@ -130,6 +167,23 @@
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="NeonTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#FF1A1F2B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FF00D4FF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -265,6 +319,25 @@
                         <TextBlock Grid.Row="1" Text="The size of the final 'brain' logic. More neurons increase intelligence but reduce speed." 
                                    Foreground="#556677" FontSize="11" FontStyle="Italic" Margin="0,25,0,0"/>
                     </Grid>
+
+                    <Border Background="#0500D4FF" BorderBrush="#3300D4FF" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,30">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <CheckBox Grid.Row="0" Content="Enable Early Stopping (Prevent Overfitting)" 
+                                      IsChecked="{Binding Config.UseEarlyStopping}" 
+                                      Style="{StaticResource NeonCheckBoxStyle}" Margin="0,0,0,15"/>
+
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" IsEnabled="{Binding Config.UseEarlyStopping}">
+                                <TextBlock Text="Target Loss:" Foreground="#00D4FF" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox Text="{Binding Config.TargetLoss}" Style="{StaticResource NeonTextBoxStyle}" Width="80" HorizontalContentAlignment="Center"/>
+                                <TextBlock Text="If the loss falls below this number, the AI stops training automatically." Foreground="#556677" FontSize="11" FontStyle="Italic" VerticalAlignment="Center" Margin="15,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
 
                     <Grid Margin="0,20,0,0">
 

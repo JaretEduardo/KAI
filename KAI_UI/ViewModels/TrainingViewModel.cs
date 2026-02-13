@@ -165,6 +165,8 @@ namespace KAI_UI.ViewModels
                 int batch = AppSettings.Instance.BatchSize;
                 int filters = AppSettings.Instance.BaseFilters;
                 int neurons = AppSettings.Instance.HiddenNeurons;
+                bool useEarly = AppSettings.Instance.UseEarlyStopping;
+                float tLoss = AppSettings.Instance.TargetLoss;
 
                 TotalEpochs = epochs;
 
@@ -178,7 +180,7 @@ namespace KAI_UI.ViewModels
 
                 AppendLog("INFO", $"Architecture -> Epochs: {epochs} | Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
 
-                await KaiBridge.TrainAsync(DatasetPath, modelFile, epochs, 0.001f, batch, filters, neurons);
+                await KaiBridge.TrainAsync(DatasetPath, modelFile, epochs, 0.001f, batch, filters, neurons, useEarly, tLoss);
 
                 AppendLog("SUCCESS", "Training process finished.");
             }
