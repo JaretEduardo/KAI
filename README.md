@@ -1,7 +1,10 @@
 # KAI
 
 > **Next-Gen AI Development Ecosystem & Digital Forensics Lab**
+>
+> *Architected and developed by **Jaret Eduardo** as a high-performance neural engine project.*
 
+![Lines of Code](./doc/loc-badge.svg)
 ![C++](https://img.shields.io/badge/Engine-C++17-blue.svg)
 ![C#](https://img.shields.io/badge/UI-WPF%20.NET%208-purple.svg)
 ![LibTorch](https://img.shields.io/badge/Backend-LibTorch-ee4c2c.svg)
