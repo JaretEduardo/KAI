@@ -55,6 +55,13 @@ namespace KAI_UI.ViewModels
             AppendLog("INFO", "KAI Engine & Log System initialized...");
         }
 
+        private int _totalEpochs = 50;
+        public int TotalEpochs
+        {
+            get => _totalEpochs;
+            set { _totalEpochs = value; OnPropertyChanged(nameof(TotalEpochs)); }
+        }
+
         private void RecibirMensajeDeCpp(string message)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -82,8 +89,10 @@ namespace KAI_UI.ViewModels
                     double accuracy = 1.0 / (1.0 + loss);
                     double displayLoss = loss > 1.5 ? 1.5 : loss;
 
-                    double plotLossY = 100.0 - (displayLoss * (100.0 / 1.5));
-                    double plotAccY = 100.0 - (accuracy * 100.0);
+                    double plotLossY = 500.0 - (displayLoss * (500.0 / 1.5));
+                    double plotAccY = 500.0 - (accuracy * 500.0);
+
+                    double plotX = (epoch / (double)TotalEpochs) * 1000.0;
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -93,21 +102,21 @@ namespace KAI_UI.ViewModels
                         if (currentLossPoints.Count == 0)
                         {
                             currentLossPoints.Add(new Point(0, 0));
-                            currentAccPoints.Add(new Point(0, 100));
+                            currentAccPoints.Add(new Point(0, 500));
                         }
 
-                        currentLossPoints.Add(new Point(epoch, plotLossY));
-                        currentAccPoints.Add(new Point(epoch, plotAccY));
+                        currentLossPoints.Add(new Point(plotX, plotLossY));
+                        currentAccPoints.Add(new Point(plotX, plotAccY));
 
                         var lossFill = new PointCollection();
                         lossFill.Add(new Point(0, 0));
                         foreach (var p in currentLossPoints) lossFill.Add(p);
-                        lossFill.Add(new Point(epoch, 0));
+                        lossFill.Add(new Point(plotX, 0));
 
                         var accFill = new PointCollection();
-                        accFill.Add(new Point(0, 100));
+                        accFill.Add(new Point(0, 500));
                         foreach (var p in currentAccPoints) accFill.Add(p);
-                        accFill.Add(new Point(epoch, 100));
+                        accFill.Add(new Point(plotX, 500));
 
                         LossPoints = currentLossPoints;
                         AccuracyPoints = currentAccPoints;
@@ -152,13 +161,24 @@ namespace KAI_UI.ViewModels
 
                 AppendLog("SUCCESS", $"STARTING TRAINING SESSION: {ModelName}");
 
+                int epochs = AppSettings.Instance.Epochs;
                 int batch = AppSettings.Instance.BatchSize;
                 int filters = AppSettings.Instance.BaseFilters;
                 int neurons = AppSettings.Instance.HiddenNeurons;
 
-                AppendLog("INFO", $"Architecture -> Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
+                TotalEpochs = epochs;
 
-                await KaiBridge.TrainAsync(DatasetPath, modelFile, 50, 0.001f, batch, filters, neurons);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    LossPoints = new PointCollection();
+                    AccuracyPoints = new PointCollection();
+                    LossFillPoints = new PointCollection();
+                    AccuracyFillPoints = new PointCollection();
+                });
+
+                AppendLog("INFO", $"Architecture -> Epochs: {epochs} | Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
+
+                await KaiBridge.TrainAsync(DatasetPath, modelFile, epochs, 0.001f, batch, filters, neurons);
 
                 AppendLog("SUCCESS", "Training process finished.");
             }

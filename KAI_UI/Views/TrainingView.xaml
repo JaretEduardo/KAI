@@ -208,9 +208,9 @@
                         </UniformGrid>
 
                         <Viewbox Stretch="Fill">
-                            <Grid Height="100">
+                            <Grid Height="500">
 
-                                <Rectangle Width="50" Height="100" Fill="Transparent" Visibility="Hidden"/>
+                                <Rectangle Width="1000" Height="500" Fill="Transparent" Visibility="Hidden"/>
 
                                 <Polygon Points="{Binding LossFillPoints}" StrokeThickness="0">
                                     <Polygon.Fill>
@@ -232,19 +232,19 @@
 
                                 <Polyline Points="{Binding LossPoints}" 
                                           Stroke="#FF4444" 
-                                          StrokeThickness="0.2" 
+                                          StrokeThickness="3" 
                                           StrokeLineJoin="Round">
                                     <Polyline.Effect>
-                                        <DropShadowEffect Color="#FF4444" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
+                                        <DropShadowEffect Color="#FF4444" BlurRadius="5" ShadowDepth="0" Opacity="1"/>
                                     </Polyline.Effect>
                                 </Polyline>
 
                                 <Polyline Points="{Binding AccuracyPoints}" 
                                           Stroke="#00D4FF" 
-                                          StrokeThickness="0.2" 
+                                          StrokeThickness="3" 
                                           StrokeLineJoin="Round">
                                     <Polyline.Effect>
-                                        <DropShadowEffect Color="#00D4FF" BlurRadius="2" ShadowDepth="0" Opacity="1"/>
+                                        <DropShadowEffect Color="#00D4FF" BlurRadius="5" ShadowDepth="0" Opacity="1"/>
                                     </Polyline.Effect>
                                 </Polyline>
 
@@ -320,11 +320,11 @@
                             </ScrollViewer.Resources>
 
                             <TextBlock Text="{Binding LogOutput}" 
-                                           SizeChanged="LogText_SizeChanged"
-                                           FontFamily="Consolas, Courier New" 
-                                           FontSize="12" 
-                                           Foreground="#00D4FF"
-                                           TextWrapping="Wrap"/>
+                                       SizeChanged="LogText_SizeChanged"
+                                       FontFamily="Consolas, Courier New" 
+                                       FontSize="12" 
+                                       Foreground="#00D4FF"
+                                       TextWrapping="Wrap"/>
                         </ScrollViewer>
                     </Border>
                 </Grid>

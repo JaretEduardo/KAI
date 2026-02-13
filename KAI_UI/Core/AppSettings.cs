@@ -80,6 +80,7 @@ namespace KAI_UI.Core
         {
             IsSavingEnabled = false;
 
+            Epochs = 50;
             BatchSize = 64;
             BaseFilters = 32;
             HiddenNeurons = 512;
@@ -91,5 +92,12 @@ namespace KAI_UI.Core
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private int _epochs = 50;
+        public int Epochs
+        {
+            get => _epochs;
+            set { _epochs = value; OnPropertyChanged(nameof(Epochs)); Save(); }
+        }
     }
 }
