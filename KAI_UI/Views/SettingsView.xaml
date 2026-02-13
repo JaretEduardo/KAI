@@ -108,6 +108,32 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="DocsButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#8B9BB4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Path Data="M19,2L14,6.5V17.5L19,13V2M6.5,5C4.55,5 2.45,5.4 1,6.5V21.16C1,21.41 1.25,21.66 1.5,21.66C1.6,21.66 1.65,21.59 1.75,21.59C3.1,20.94 5.05,20.5 6.5,20.5C8.45,20.5 10.55,20.9 12,22C13.35,21.15 15.8,20.5 17.5,20.5C19.15,20.5 20.85,20.81 22.25,21.56C22.35,21.61 22.4,21.59 22.5,21.59C22.75,21.59 23,21.34 23,21.09V6.5C22.4,6.05 21.75,5.75 21,5.5V19C19.9,18.65 18.7,18.5 17.5,18.5C15.8,18.5 13.35,19.15 12,20V6.5C10.55,5.4 8.45,5 6.5,5Z"
+                                      Fill="{TemplateBinding Foreground}" Width="14" Height="14" Margin="0,0,8,0" Stretch="Uniform"/>
+                                <ContentPresenter/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="30">
@@ -174,16 +200,23 @@
                                Foreground="#556677" FontSize="11" FontStyle="Italic" Margin="0,25,0,0"/>
                 </Grid>
 
-                <Button Content="RESTORE DEFAULTS" 
-                        Command="{Binding RestoreDefaultsCommand}" 
-                        Style="{StaticResource NeonButtonStyle}" 
-                        Height="40" Width="180" 
-                        HorizontalAlignment="Right" 
-                        Margin="0,30,0,0">
-                    <Button.Effect>
-                        <DropShadowEffect Color="#00D4FF" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
-                    </Button.Effect>
-                </Button>
+                <Grid Margin="0,20,0,0">
+
+                    <Button Content="Read Documentation / Tutorial" 
+                            Style="{StaticResource DocsButtonStyle}" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center"/>
+
+                    <Button Content="RESTORE DEFAULTS" 
+                            Command="{Binding RestoreDefaultsCommand}" 
+                            Style="{StaticResource NeonButtonStyle}" 
+                            Height="40" Width="180" 
+                            HorizontalAlignment="Right">
+                        <Button.Effect>
+                            <DropShadowEffect Color="#00D4FF" BlurRadius="15" ShadowDepth="0" Opacity="0.4"/>
+                        </Button.Effect>
+                    </Button>
+                </Grid>
 
             </StackPanel>
         </Border>
