@@ -8,6 +8,8 @@ using System.Windows.Media;
 using KAI_UI.Core;
 using KAI_UI.Services;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace KAI_UI.ViewModels
 {
@@ -34,6 +36,14 @@ namespace KAI_UI.ViewModels
         private PointCollection _accuracyFillPoints;
         public PointCollection AccuracyFillPoints { get => _accuracyFillPoints; set { _accuracyFillPoints = value; OnPropertyChanged(nameof(AccuracyFillPoints)); } }
 
+        private List<(double Epoch, double Loss, double Accuracy)> _trainingHistory = new List<(double, double, double)>();
+
+        private double _gpuUsage;
+        public double GpuUsage { get => _gpuUsage; set { _gpuUsage = value; OnPropertyChanged(nameof(GpuUsage)); } }
+
+        private string _gpuUsageText = "GPU: Idle";
+        public string GpuUsageText { get => _gpuUsageText; set { _gpuUsageText = value; OnPropertyChanged(nameof(GpuUsageText)); } }
+
 
         public ICommand BrowseFolderCommand { get; }
         public ICommand StartTrainingCommand { get; }
@@ -53,6 +63,18 @@ namespace KAI_UI.ViewModels
 
             KaiBridge.Initialize(RecibirMensajeDeCpp);
             AppendLog("INFO", "KAI Engine & Log System initialized...");
+
+            DispatcherTimer gpuTimer = new DispatcherTimer();
+            gpuTimer.Interval = TimeSpan.FromSeconds(1);
+            gpuTimer.Tick += UpdateGpuUsage;
+            gpuTimer.Start();
+        }
+
+        private int _totalEpochs = 50;
+        public int TotalEpochs
+        {
+            get => _totalEpochs;
+            set { _totalEpochs = value; OnPropertyChanged(nameof(TotalEpochs)); }
         }
 
         private void RecibirMensajeDeCpp(string message)
@@ -82,35 +104,42 @@ namespace KAI_UI.ViewModels
                     double accuracy = 1.0 / (1.0 + loss);
                     double displayLoss = loss > 1.5 ? 1.5 : loss;
 
-                    double plotLossY = 100.0 - (displayLoss * (100.0 / 1.5));
-                    double plotAccY = 100.0 - (accuracy * 100.0);
+                    _trainingHistory.Add((epoch, displayLoss, accuracy));
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        var currentLossPoints = new PointCollection(LossPoints);
-                        var currentAccPoints = new PointCollection(AccuracyPoints);
+                        var newLossPoints = new PointCollection();
+                        var newAccPoints = new PointCollection();
 
-                        if (currentLossPoints.Count == 0)
+                        newLossPoints.Add(new Point(0, 0));
+                        newAccPoints.Add(new Point(0, 500));
+
+                        double maxEpoch = Math.Max(2.0, _trainingHistory.Last().Epoch);
+
+                        foreach (var item in _trainingHistory)
                         {
-                            currentLossPoints.Add(new Point(0, 0));
-                            currentAccPoints.Add(new Point(0, 100));
+                            double plotX = (item.Epoch / maxEpoch) * 1000.0;
+                            double plotLossY = 500.0 - (item.Loss * (500.0 / 1.5));
+                            double plotAccY = 500.0 - (item.Accuracy * 500.0);
+
+                            newLossPoints.Add(new Point(plotX, plotLossY));
+                            newAccPoints.Add(new Point(plotX, plotAccY));
                         }
 
-                        currentLossPoints.Add(new Point(epoch, plotLossY));
-                        currentAccPoints.Add(new Point(epoch, plotAccY));
+                        double lastX = (_trainingHistory.Last().Epoch / maxEpoch) * 1000.0;
 
                         var lossFill = new PointCollection();
                         lossFill.Add(new Point(0, 0));
-                        foreach (var p in currentLossPoints) lossFill.Add(p);
-                        lossFill.Add(new Point(epoch, 0));
+                        foreach (var p in newLossPoints) lossFill.Add(p);
+                        lossFill.Add(new Point(lastX, 0));
 
                         var accFill = new PointCollection();
-                        accFill.Add(new Point(0, 100));
-                        foreach (var p in currentAccPoints) accFill.Add(p);
-                        accFill.Add(new Point(epoch, 100));
+                        accFill.Add(new Point(0, 500));
+                        foreach (var p in newAccPoints) accFill.Add(p);
+                        accFill.Add(new Point(lastX, 500));
 
-                        LossPoints = currentLossPoints;
-                        AccuracyPoints = currentAccPoints;
+                        LossPoints = newLossPoints;
+                        AccuracyPoints = newAccPoints;
                         LossFillPoints = lossFill;
                         AccuracyFillPoints = accFill;
                     });
@@ -142,7 +171,8 @@ namespace KAI_UI.ViewModels
             AccuracyPoints.Clear();
             LossFillPoints.Clear();
             AccuracyFillPoints.Clear();
-            try 
+            _trainingHistory.Clear();
+            try
             {
                 string baseDir = @"C:\KAI_Models";
                 string outputFolder = Path.Combine(baseDir, ModelName);
@@ -152,10 +182,29 @@ namespace KAI_UI.ViewModels
 
                 AppendLog("SUCCESS", $"STARTING TRAINING SESSION: {ModelName}");
 
-                await KaiBridge.TrainAsync(DatasetPath, modelFile, 50, 0.001f);
+                int epochs = AppSettings.Instance.Epochs;
+                int batch = AppSettings.Instance.BatchSize;
+                int filters = AppSettings.Instance.BaseFilters;
+                int neurons = AppSettings.Instance.HiddenNeurons;
+                bool useEarly = AppSettings.Instance.UseEarlyStopping;
+                float tLoss = AppSettings.Instance.TargetLoss;
 
-                AppendLog("SUCCESS", "Training process finished."); 
-            } 
+                TotalEpochs = epochs;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    LossPoints = new PointCollection();
+                    AccuracyPoints = new PointCollection();
+                    LossFillPoints = new PointCollection();
+                    AccuracyFillPoints = new PointCollection();
+                });
+
+                AppendLog("INFO", $"Architecture -> Epochs: {epochs} | Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
+
+                await KaiBridge.TrainAsync(DatasetPath, modelFile, epochs, 0.001f, batch, filters, neurons, useEarly, tLoss);
+
+                AppendLog("SUCCESS", "Training process finished.");
+            }
             catch (Exception ex) 
             {
                 AppendLog("FATAL", $"Engine Error: {ex.Message}");
@@ -164,6 +213,35 @@ namespace KAI_UI.ViewModels
         private void AppendLog(string type, string message) 
         {
             LogOutput += $"> [{type}] {message}\n"; 
+        }
+
+        private async void UpdateGpuUsage(object sender, EventArgs e)
+        {
+            try
+            {
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = "nvidia-smi",
+                    Arguments = "--query-gpu=utilization.gpu --format=csv,noheader,nounits",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (var process = Process.Start(processInfo))
+                {
+                    string output = await process.StandardOutput.ReadToEndAsync();
+                    if (double.TryParse(output.Trim(), out double usage))
+                    {
+                        GpuUsage = usage;
+                        GpuUsageText = usage > 0 ? $"GPU: {usage}%" : "GPU: Idle";
+                    }
+                }
+            }
+            catch
+            {
+                GpuUsageText = "GPU: N/A";
+            }
         }
     }
 }

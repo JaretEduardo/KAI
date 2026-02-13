@@ -46,7 +46,7 @@ extern "C" {
         return 0;
     }
 
-    KAI_API void TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate) {
+    KAI_API void TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate, int batch_size, int base_filters, int hidden_neurons, bool use_early_stopping, float target_loss) {
         try {
             std::string path(datasetPath);
             std::string outPath(outputPath);
@@ -92,7 +92,7 @@ extern "C" {
 
             LogToUI("[KAI DLL] Dataset in VRAM. Starting ultra-fast loop...");
 
-            SimpleCNN model(num_classes);
+            SimpleCNN model(num_classes, base_filters, hidden_neurons);
             model->to(device);
             model->train();
 
@@ -103,7 +103,6 @@ extern "C" {
             std::random_device rd;
             std::mt19937 g(rd());
 
-            int batch_size = 64;
             int num_batches = dataset_size / batch_size;
             if (num_batches == 0) num_batches = 1;
 
@@ -142,6 +141,13 @@ extern "C" {
                 std::string msg = "Epoch [" + std::to_string(epoch) + "/" + std::to_string(epochs) +
                     "] Loss: " + std::to_string(avg_loss);
                 LogToUI(msg);
+
+                if (use_early_stopping && avg_loss <= target_loss) {
+                    std::string stop_msg = "> [ENGINE] EARLY STOPPING TRIGGERED! Target loss reached (" + std::to_string(avg_loss) + " <= " + std::to_string(target_loss) + ").";
+                    LogToUI(stop_msg);
+                    LogToUI("> [ENGINE] Halting training prematurely to prevent overfitting.");
+                    break;
+                }
             }
 
             LogToUI("[KAI DLL] Saving model...");

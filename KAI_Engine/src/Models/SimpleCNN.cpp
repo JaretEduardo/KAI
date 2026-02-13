@@ -1,18 +1,21 @@
 #include "SimpleCNN.h"
 
-SimpleCNNImpl::SimpleCNNImpl(int num_classes) {
+SimpleCNNImpl::SimpleCNNImpl(int num_classes, int base_filters, int hidden_neurons) {
 
-    conv1 = register_module("conv1", torch::nn::Conv2d(torch::nn::Conv2dOptions(3, 32, 3).padding(1)));
-    bn1 = register_module("bn1", torch::nn::BatchNorm2d(32));
+    conv1 = register_module("conv1", torch::nn::Conv2d(torch::nn::Conv2dOptions(3, base_filters, 3).padding(1)));
+    bn1 = register_module("bn1", torch::nn::BatchNorm2d(base_filters));
 
-    conv2 = register_module("conv2", torch::nn::Conv2d(torch::nn::Conv2dOptions(32, 64, 3).padding(1)));
-    bn2 = register_module("bn2", torch::nn::BatchNorm2d(64));
+    conv2 = register_module("conv2", torch::nn::Conv2d(torch::nn::Conv2dOptions(base_filters, base_filters * 2, 3).padding(1)));
+    bn2 = register_module("bn2", torch::nn::BatchNorm2d(base_filters * 2));
 
-    conv3 = register_module("conv3", torch::nn::Conv2d(torch::nn::Conv2dOptions(64, 128, 3).padding(1)));
-    bn3 = register_module("bn3", torch::nn::BatchNorm2d(128));
+    conv3 = register_module("conv3", torch::nn::Conv2d(torch::nn::Conv2dOptions(base_filters * 2, base_filters * 4, 3).padding(1)));
+    bn3 = register_module("bn3", torch::nn::BatchNorm2d(base_filters * 4));
 
-    fc1 = register_module("fc1", torch::nn::Linear(128 * 8 * 8, 512));
-    fc2 = register_module("fc2", torch::nn::Linear(512, num_classes));
+    int final_channels = base_filters * 4;
+    int flattened_size = final_channels * 8 * 8;
+
+    fc1 = register_module("fc1", torch::nn::Linear(flattened_size, hidden_neurons));
+    fc2 = register_module("fc2", torch::nn::Linear(hidden_neurons, num_classes));
 }
 
 torch::Tensor SimpleCNNImpl::forward(torch::Tensor x) {
