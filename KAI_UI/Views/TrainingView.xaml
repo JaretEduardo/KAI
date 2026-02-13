@@ -331,7 +331,7 @@
 
                 <StackPanel Grid.Row="5">
                     <Grid Margin="0,0,0,10">
-                        <ProgressBar Value="0" Height="6" Background="#FF1A1F2B" Foreground="#00D4FF" BorderThickness="0">
+                        <ProgressBar Value="{Binding GpuUsage}" Maximum="100" Height="6" Background="#FF1A1F2B" Foreground="#00D4FF" BorderThickness="0">
                             <ProgressBar.Clip>
                                 <RectangleGeometry Rect="0,0,1000,6" RadiusX="3" RadiusY="3"/>
                             </ProgressBar.Clip>
@@ -344,7 +344,7 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Path Data="M22,18V6A2,2 0 0,0 20,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18M11,13H13V15H11V13M11,9H13V11H11V9M7,13H9V15H7V13M7,9H9V11H7V9M15,13H17V15H15V13M15,9H17V11H15V9Z"
                                   Fill="#00D4FF" Width="14" Height="14" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="GPU: Idle" Foreground="#00D4FF" FontWeight="SemiBold" FontSize="12"/>
+                            <TextBlock Text="{Binding GpuUsageText}" Foreground="#00D4FF" FontWeight="SemiBold" FontSize="12"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
