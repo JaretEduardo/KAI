@@ -142,7 +142,7 @@ namespace KAI_UI.ViewModels
             AccuracyPoints.Clear();
             LossFillPoints.Clear();
             AccuracyFillPoints.Clear();
-            try 
+            try
             {
                 string baseDir = @"C:\KAI_Models";
                 string outputFolder = Path.Combine(baseDir, ModelName);
@@ -152,10 +152,16 @@ namespace KAI_UI.ViewModels
 
                 AppendLog("SUCCESS", $"STARTING TRAINING SESSION: {ModelName}");
 
-                await KaiBridge.TrainAsync(DatasetPath, modelFile, 50, 0.001f);
+                int batch = AppSettings.Instance.BatchSize;
+                int filters = AppSettings.Instance.BaseFilters;
+                int neurons = AppSettings.Instance.HiddenNeurons;
 
-                AppendLog("SUCCESS", "Training process finished."); 
-            } 
+                AppendLog("INFO", $"Architecture -> Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
+
+                await KaiBridge.TrainAsync(DatasetPath, modelFile, 50, 0.001f, batch, filters, neurons);
+
+                AppendLog("SUCCESS", "Training process finished.");
+            }
             catch (Exception ex) 
             {
                 AppendLog("FATAL", $"Engine Error: {ex.Message}");

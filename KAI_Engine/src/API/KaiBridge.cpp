@@ -46,7 +46,7 @@ extern "C" {
         return 0;
     }
 
-    KAI_API void TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate) {
+    KAI_API void TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate, int batch_size, int base_filters, int hidden_neurons) {
         try {
             std::string path(datasetPath);
             std::string outPath(outputPath);
@@ -92,7 +92,7 @@ extern "C" {
 
             LogToUI("[KAI DLL] Dataset in VRAM. Starting ultra-fast loop...");
 
-            SimpleCNN model(num_classes);
+            SimpleCNN model(num_classes, base_filters, hidden_neurons);
             model->to(device);
             model->train();
 

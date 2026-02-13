@@ -2,8 +2,7 @@
 #include <torch/torch.h>
 
 struct SimpleCNNImpl : torch::nn::Module {
-
-    SimpleCNNImpl(int num_classes);
+    SimpleCNNImpl(int num_classes, int base_filters, int hidden_neurons);
 
     torch::Tensor forward(torch::Tensor x);
 

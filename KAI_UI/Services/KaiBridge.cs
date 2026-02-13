@@ -19,8 +19,8 @@ namespace KAI_UI.Services
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int InitEngine();
 
-        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate);
+        [DllImport("KAI_Engine.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern void TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons);
 
         public static void Initialize(LogCallback callbackAction)
         {
@@ -41,11 +41,11 @@ namespace KAI_UI.Services
             }
         }
 
-        public static Task TrainAsync(string datasetPath, string outputPath, int epochs, float lr)
+        public static Task TrainAsync(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons)
         {
             return Task.Run(() =>
             {
-                TrainAutoML(datasetPath, outputPath, epochs, lr);
+                TrainAutoML(datasetPath, outputPath, epochs, learningRate, batchSize, baseFilters, hiddenNeurons);
             });
         }
     }
