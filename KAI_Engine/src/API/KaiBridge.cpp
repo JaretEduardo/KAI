@@ -20,6 +20,12 @@
 #define KAI_API __declspec(dllimport)
 #endif
 
+struct TrainingResult {
+    float final_loss;
+    float final_accuracy;
+    bool success;
+};
+
 typedef void(__stdcall* LogCallbackType)(const char*);
 
 LogCallbackType g_logCallback = nullptr;
@@ -37,7 +43,6 @@ extern "C" {
     }
 
     KAI_API int InitEngine() {
-
         if (torch::cuda::is_available()) {
             LogToUI("[KAI DLL] NVIDIA GPU Detected.");
             return 1;
@@ -46,7 +51,10 @@ extern "C" {
         return 0;
     }
 
-    KAI_API void TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate, int batch_size, int base_filters, int hidden_neurons, bool use_early_stopping, float target_loss) {
+    KAI_API TrainingResult TrainAutoML(const char* datasetPath, const char* outputPath, int epochs, float learning_rate, int batch_size, int base_filters, int hidden_neurons, bool use_early_stopping, float target_loss) {
+
+        TrainingResult result = { 0.0f, 0.0f, false };
+
         try {
             std::string path(datasetPath);
             std::string outPath(outputPath);
@@ -65,13 +73,13 @@ extern "C" {
 
             if (dataset_size == 0) {
                 LogToUI("[ERROR] There is no data.");
-                return;
+                return result;
             }
 
             int num_classes = dataset.getClassMap().size();
             LogToUI("[KAI DLL] Classes: " + std::to_string(num_classes) + " | Images: " + std::to_string(dataset_size));
 
-            LogToUI("[KAI DLL] Uploading dataset to GPU (This may take a few seconds)...");
+            LogToUI("[KAI DLL] Uploading dataset to GPU...");
 
             std::vector<torch::Tensor> all_images;
             std::vector<torch::Tensor> all_targets;
@@ -106,17 +114,21 @@ extern "C" {
             int num_batches = dataset_size / batch_size;
             if (num_batches == 0) num_batches = 1;
 
+            float final_epoch_loss = 0.0f;
+            float final_epoch_acc = 0.0f;
+
             for (int epoch = 1; epoch <= epochs; ++epoch) {
 
                 std::shuffle(indices.begin(), indices.end(), g);
 
                 auto indices_tensor = torch::from_blob(indices.data(), { (long)dataset_size }, torch::kLong).to(device);
-
                 auto shuffled_images = full_images_tensor.index_select(0, indices_tensor);
                 auto shuffled_targets = full_targets_tensor.index_select(0, indices_tensor);
 
                 float epoch_loss = 0.0;
+                float epoch_correct = 0.0;
                 int batches_processed = 0;
+                int total_samples_epoch = 0;
 
                 for (int b = 0; b < num_batches; ++b) {
 
@@ -134,18 +146,27 @@ extern "C" {
                     optimizer.step();
 
                     epoch_loss += loss.item<float>();
+
+                    auto pred = output.argmax(1);
+                    epoch_correct += pred.eq(batch_lbls).sum().item<float>();
+
                     batches_processed++;
+                    total_samples_epoch += (end_idx - start_idx);
                 }
 
                 float avg_loss = (batches_processed > 0) ? (epoch_loss / batches_processed) : 0.0f;
+                float avg_acc = (total_samples_epoch > 0) ? (epoch_correct / total_samples_epoch) : 0.0f;
+
+                final_epoch_loss = avg_loss;
+                final_epoch_acc = avg_acc;
+
                 std::string msg = "Epoch [" + std::to_string(epoch) + "/" + std::to_string(epochs) +
-                    "] Loss: " + std::to_string(avg_loss);
+                    "] Loss: " + std::to_string(avg_loss) +
+                    " | Acc: " + std::to_string(avg_acc * 100.0f) + "%";
                 LogToUI(msg);
 
                 if (use_early_stopping && avg_loss <= target_loss) {
-                    std::string stop_msg = "> [ENGINE] EARLY STOPPING TRIGGERED! Target loss reached (" + std::to_string(avg_loss) + " <= " + std::to_string(target_loss) + ").";
-                    LogToUI(stop_msg);
-                    LogToUI("> [ENGINE] Halting training prematurely to prevent overfitting.");
+                    LogToUI("> [ENGINE] EARLY STOPPING TRIGGERED.");
                     break;
                 }
             }
@@ -155,15 +176,23 @@ extern "C" {
             LogToUI("[KAI DLL] Model saved SUCCESSFULLY.");
             LogToUI("TRAINING_COMPLETE");
 
+            result.final_loss = final_epoch_loss;
+            result.final_accuracy = final_epoch_acc;
+            result.success = true;
+
         }
         catch (const std::exception& e) {
             std::string err = "[CRITICAL ERROR]: ";
             err += e.what();
             LogToUI(err);
+            result.success = false;
         }
         catch (...) {
             LogToUI("[CRITICAL ERROR] Unknown exception.");
+            result.success = false;
         }
+
+        return result;
     }
 
     KAI_API int PredictImage(const char* imagePath) {
