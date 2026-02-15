@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KAI_UI.ViewModels;
 
 namespace KAI_UI.Views
 {
@@ -23,6 +24,15 @@ namespace KAI_UI.Views
         public ModelsView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // Verificamos si el DataContext es nuestro ViewModel y llamamos al comando Refresh
+            if (DataContext is ModelsViewModel vm)
+            {
+                vm.RefreshCommand.Execute(null);
+            }
         }
     }
 }
