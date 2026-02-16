@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ using KAI_UI.Services;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows.Threading;
+using System.Text.Json;
 
 namespace KAI_UI.ViewModels
 {
@@ -60,6 +62,8 @@ namespace KAI_UI.ViewModels
             AccuracyPoints = new PointCollection();
             LossFillPoints = new PointCollection();
             AccuracyFillPoints = new PointCollection();
+
+            GlobalEvents.OnRetrainRequested += SetupRetrain;
 
             KaiBridge.Initialize(RecibirMensajeDeCpp);
             AppendLog("INFO", "KAI Engine & Log System initialized...");
@@ -163,6 +167,43 @@ namespace KAI_UI.ViewModels
             DatasetPath = path;
             AppendLog("ACTION", $"Dataset dropped: {DatasetPath}");
         }
+
+        public class ModelMetadata
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string WeightsFilename { get; set; }
+            public string DatasetPath { get; set; }
+            public string Framework { get; set; } = "LibTorch (C++)";
+            public ModelHyperparameters Hyperparameters { get; set; }
+            public ModelMetrics Metrics { get; set; }
+            public List<EpochData> TrainingHistory { get; set; }
+        }
+
+        public class EpochData
+        {
+            public int Epoch { get; set; }
+            public float Loss { get; set; }
+            public float Accuracy { get; set; }
+        }
+
+        public class ModelHyperparameters
+        {
+            public int Epochs { get; set; }
+            public int BatchSize { get; set; }
+            public float LearningRate { get; set; }
+            public int BaseFilters { get; set; }
+            public int HiddenNeurons { get; set; }
+            public bool UseEarlyStopping { get; set; }
+        }
+
+        public class ModelMetrics
+        {
+            public float FinalLoss { get; set; }
+            public float FinalAccuracy { get; set; }
+        }
+
         private async void StartTraining() 
         { 
             if (string.IsNullOrEmpty(DatasetPath) || DatasetPath == "No folder selected") return;
@@ -174,13 +215,17 @@ namespace KAI_UI.ViewModels
             _trainingHistory.Clear();
             try
             {
-                string baseDir = @"C:\KAI_Models";
-                string outputFolder = Path.Combine(baseDir, ModelName);
-                string modelFile = Path.Combine(outputFolder, $"{ModelName}.pt");
+                string baseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "KAI_Models");
+                string modelUUID = Guid.NewGuid().ToString();
 
+                string outputFolder = Path.Combine(baseDir, ModelName);
                 if (!Directory.Exists(outputFolder)) Directory.CreateDirectory(outputFolder);
 
-                AppendLog("SUCCESS", $"STARTING TRAINING SESSION: {ModelName}");
+                string weightsFileName = $"{modelUUID}.pt";
+                string fullWeightsPath = Path.Combine(outputFolder, weightsFileName);
+                string jsonPath = Path.Combine(outputFolder, "metadata.json");
+
+                AppendLog("SUCCESS", $"STARTING TRAINING SESSION: {ModelName} (ID: {modelUUID})");
 
                 int epochs = AppSettings.Instance.Epochs;
                 int batch = AppSettings.Instance.BatchSize;
@@ -188,27 +233,72 @@ namespace KAI_UI.ViewModels
                 int neurons = AppSettings.Instance.HiddenNeurons;
                 bool useEarly = AppSettings.Instance.UseEarlyStopping;
                 float tLoss = AppSettings.Instance.TargetLoss;
+                float learningRate = 0.001f;
 
                 TotalEpochs = epochs;
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    LossPoints = new PointCollection();
-                    AccuracyPoints = new PointCollection();
-                    LossFillPoints = new PointCollection();
-                    AccuracyFillPoints = new PointCollection();
+                    LossPoints = new PointCollection(); AccuracyPoints = new PointCollection();
+                    LossFillPoints = new PointCollection(); AccuracyFillPoints = new PointCollection();
                 });
 
                 AppendLog("INFO", $"Architecture -> Epochs: {epochs} | Batch: {batch} | Filters: {filters} | Neurons: {neurons}");
 
-                await KaiBridge.TrainAsync(DatasetPath, modelFile, epochs, 0.001f, batch, filters, neurons, useEarly, tLoss);
+                var result = await KaiBridge.TrainAsync(DatasetPath, fullWeightsPath, epochs, learningRate, batch, filters, neurons, useEarly, tLoss);
 
-                AppendLog("SUCCESS", "Training process finished.");
+                if (result.Success)
+                {
+                    AppendLog("SUCCESS", $"Training Finished! Accuracy: {result.FinalAccuracy:P2} | Loss: {result.FinalLoss:F4}");
+
+                    var historyList = _trainingHistory.Select(h => new EpochData
+                    {
+                        Epoch = (int)h.Epoch,
+                        Loss = (float)h.Loss,
+                        Accuracy = (float)h.Accuracy
+                    }).ToList();
+
+                    var metadata = new ModelMetadata
+                    {
+                        Id = modelUUID,
+                        Name = ModelName,
+                        CreatedAt = DateTime.Now,
+                        WeightsFilename = weightsFileName,
+
+                        DatasetPath = this.DatasetPath,
+
+                        Framework = "LibTorch (C++) / KAI Engine",
+                        Hyperparameters = new ModelHyperparameters
+                        {
+                            Epochs = epochs,
+                            BatchSize = batch,
+                            LearningRate = learningRate,
+                            BaseFilters = filters,
+                            HiddenNeurons = neurons,
+                            UseEarlyStopping = AppSettings.Instance.UseEarlyStopping
+                        },
+                        Metrics = new ModelMetrics
+                        {
+                            FinalAccuracy = result.FinalAccuracy,
+                            FinalLoss = result.FinalLoss
+                        },
+                        TrainingHistory = historyList
+                    };
+
+                    string jsonString = JsonSerializer.Serialize(metadata, new JsonSerializerOptions { WriteIndented = true });
+                    File.WriteAllText(jsonPath, jsonString);
+
+                    AppendLog("INFO", $"Metadata saved to: {jsonPath}");
+                }
+                else
+                {
+                    AppendLog("FATAL", "Training failed in backend.");
+                }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 AppendLog("FATAL", $"Engine Error: {ex.Message}");
-            } 
+            }
         }
         private void AppendLog(string type, string message) 
         {
@@ -242,6 +332,24 @@ namespace KAI_UI.ViewModels
             {
                 GpuUsageText = "GPU: N/A";
             }
+        }
+
+        private void SetupRetrain(ModelMetadata model)
+        {
+            DatasetPath = model.DatasetPath;
+
+            ModelName = model.Name + "_Retrain";
+
+            if (model.Hyperparameters != null)
+            {
+                AppSettings.Instance.Epochs = model.Hyperparameters.Epochs;
+                AppSettings.Instance.BatchSize = model.Hyperparameters.BatchSize;
+                AppSettings.Instance.BaseFilters = model.Hyperparameters.BaseFilters;
+                AppSettings.Instance.HiddenNeurons = model.Hyperparameters.HiddenNeurons;
+                AppSettings.Instance.UseEarlyStopping = model.Hyperparameters.UseEarlyStopping;
+            }
+
+            AppendLog("INFO", $"READY TO RETRAIN: {model.Name} (Settings loaded)");
         }
     }
 }

@@ -78,7 +78,7 @@
                                        TextAlignment="Center"/>
                         </StackPanel>
 
-                        <RadioButton Style="{StaticResource KaiNavButton}" IsChecked="True" Click="BtnDashboard_Click">
+                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnDashboard_Click" GroupName="NavGroup"  IsChecked="{Binding IsDashboardActive}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -87,7 +87,7 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnTraining_Click">
+                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnTraining_Click" GroupName="NavGroup"  IsChecked="{Binding IsTrainingActive}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -96,7 +96,7 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnModels_Click">
+                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnModels_Click" GroupName="NavGroup"  IsChecked="{Binding IsModelsActive}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Width="24" Height="24" Margin="0,0,15,0" Stretch="Uniform"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -105,7 +105,7 @@
                             </StackPanel>
                         </RadioButton>
 
-                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnNew_Click">
+                        <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnNew_Click" GroupName="NavGroup"  IsChecked="{Binding IsForensicsActive}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
                                       Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"
@@ -116,7 +116,7 @@
 
                     </StackPanel>
 
-                    <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnSettings_Click" VerticalAlignment="Bottom" Margin="0,0,0,30">
+                    <RadioButton Style="{StaticResource KaiNavButton}" Click="BtnSettings_Click" VerticalAlignment="Bottom" Margin="0,0,0,30" GroupName="NavGroup"  IsChecked="{Binding IsSettingsActive}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
                             <Path Width="20" Height="20" Margin="0,0,15,0" Stretch="Uniform"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"

@@ -4,6 +4,15 @@ using System.Threading.Tasks;
 
 namespace KAI_UI.Services
 {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TrainingResult
+    {
+        public float FinalLoss;
+        public float FinalAccuracy;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool Success;
+    }
+
     public static class KaiBridge
     {
         private const string DllName = "KAI_Engine.dll";
@@ -19,21 +28,16 @@ namespace KAI_UI.Services
         [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int InitEngine();
 
-        [DllImport("KAI_Engine.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        private static extern void TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, [MarshalAs(UnmanagedType.I1)] bool useEarlyStopping, float targetLoss);
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern TrainingResult TrainAutoML(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, [MarshalAs(UnmanagedType.I1)] bool useEarlyStopping, float targetLoss);
 
         public static void Initialize(LogCallback callbackAction)
         {
             _callbackInstance = callbackAction;
-
             try
             {
                 SetLogCallback(_callbackInstance);
                 InitEngine();
-            }
-            catch (DllNotFoundException)
-            {
-                Console.WriteLine("Warning: KAI_Engine.dll not found during init.");
             }
             catch (Exception ex)
             {
@@ -41,11 +45,11 @@ namespace KAI_UI.Services
             }
         }
 
-        public static Task TrainAsync(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, bool useEarlyStopping, float targetLoss)
+        public static Task<TrainingResult> TrainAsync(string datasetPath, string outputPath, int epochs, float learningRate, int batchSize, int baseFilters, int hiddenNeurons, bool useEarlyStopping, float targetLoss)
         {
             return Task.Run(() =>
             {
-                TrainAutoML(datasetPath, outputPath, epochs, learningRate, batchSize, baseFilters, hiddenNeurons, useEarlyStopping, targetLoss);
+                return TrainAutoML(datasetPath, outputPath, epochs, learningRate, batchSize, baseFilters, hiddenNeurons, useEarlyStopping, targetLoss);
             });
         }
     }
