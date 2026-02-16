@@ -63,6 +63,8 @@ namespace KAI_UI.ViewModels
             LossFillPoints = new PointCollection();
             AccuracyFillPoints = new PointCollection();
 
+            GlobalEvents.OnRetrainRequested += SetupRetrain;
+
             KaiBridge.Initialize(RecibirMensajeDeCpp);
             AppendLog("INFO", "KAI Engine & Log System initialized...");
 
@@ -172,6 +174,7 @@ namespace KAI_UI.ViewModels
             public string Name { get; set; }
             public DateTime CreatedAt { get; set; }
             public string WeightsFilename { get; set; }
+            public string DatasetPath { get; set; }
             public string Framework { get; set; } = "LibTorch (C++)";
             public ModelHyperparameters Hyperparameters { get; set; }
             public ModelMetrics Metrics { get; set; }
@@ -260,6 +263,9 @@ namespace KAI_UI.ViewModels
                         Name = ModelName,
                         CreatedAt = DateTime.Now,
                         WeightsFilename = weightsFileName,
+
+                        DatasetPath = this.DatasetPath,
+
                         Framework = "LibTorch (C++) / KAI Engine",
                         Hyperparameters = new ModelHyperparameters
                         {
@@ -324,6 +330,23 @@ namespace KAI_UI.ViewModels
             {
                 GpuUsageText = "GPU: N/A";
             }
+        }
+
+        private void SetupRetrain(ModelMetadata model)
+        {
+            DatasetPath = model.DatasetPath;
+
+            ModelName = model.Name + "_Retrain";
+
+            if (model.Hyperparameters != null)
+            {
+                AppSettings.Instance.Epochs = model.Hyperparameters.Epochs;
+                AppSettings.Instance.BatchSize = model.Hyperparameters.BatchSize;
+                AppSettings.Instance.BaseFilters = model.Hyperparameters.BaseFilters;
+                AppSettings.Instance.HiddenNeurons = model.Hyperparameters.HiddenNeurons;
+            }
+
+            AppendLog("INFO", $"READY TO RETRAIN: {model.Name} (Settings loaded)");
         }
     }
 }

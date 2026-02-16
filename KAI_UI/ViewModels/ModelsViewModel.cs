@@ -56,6 +56,7 @@ namespace KAI_UI.ViewModels
             RefreshCommand = new RelayCommand(o => LoadModels());
             DeleteModelCommand = new RelayCommand(o => DeleteSelectedModel());
             RetrainCommand = new RelayCommand(o => MessageBox.Show("Retrain logic here"));
+            RetrainCommand = new RelayCommand(o => ExecuteRetrain());
 
             LoadModels();
         }
@@ -160,7 +161,12 @@ namespace KAI_UI.ViewModels
 
             string msg = $"Permanently delete protocol for neural model:\n\n'{SelectedModel.Name}'\n\nThis action is irreversible. Proceed?";
 
-            var dialog = new ConfirmationWindow(msg);
+            var dialog = new ConfirmationWindow(
+                msg,
+                ConfirmationType.Danger,
+                "SYSTEM WARNING",
+                "CONFIRM DELETE"
+            );
 
             bool? result = dialog.ShowDialog();
 
@@ -193,6 +199,42 @@ namespace KAI_UI.ViewModels
                 {
                     MessageBox.Show($"Error deleting model: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        private void ExecuteRetrain()
+        {
+            if (SelectedModel == null) return;
+
+            if (string.IsNullOrEmpty(SelectedModel.DatasetPath))
+            {
+                MessageBox.Show("This model metadata does not contain a dataset path (Legacy Model).",
+                                "Missing Metadata", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!Directory.Exists(SelectedModel.DatasetPath))
+            {
+                MessageBox.Show(
+                    $"Original dataset folder not found:\n{SelectedModel.DatasetPath}\n\nPlease check if it was moved or deleted.",
+                    "Dataset Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            string msg = $"System Ready to Retrain Neural Model:\n\n'{SelectedModel.Name}'\n\nUsing source dataset:\n{SelectedModel.DatasetPath}\n\nInitialize training sequence?";
+
+            var dialog = new ConfirmationWindow(
+                msg,
+                ConfirmationType.Info,
+                "TRAINING PROTOCOL",
+                "INITIALIZE"
+            );
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                GlobalEvents.RequestRetrain(SelectedModel);
             }
         }
     }

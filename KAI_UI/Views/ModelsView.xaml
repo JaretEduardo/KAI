@@ -204,10 +204,15 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
-                                        <Border x:Name="CardBorder" BorderThickness="1" CornerRadius="12" Height="90">
+                                        <Border x:Name="CardBorder" 
+            BorderThickness="1" 
+            CornerRadius="12" 
+            Height="90">
+
                                             <Border.Background>
                                                 <SolidColorBrush Color="#0A0F16"/>
                                             </Border.Background>
+
                                             <Border.BorderBrush>
                                                 <SolidColorBrush Color="#3300D4FF"/>
                                             </Border.BorderBrush>
@@ -217,8 +222,12 @@
                                                     <VisualState x:Name="Unselected" />
                                                     <VisualState x:Name="Selected">
                                                         <Storyboard>
-                                                            <ColorAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" To="#00D4FF" Duration="0:0:0.2"/>
-                                                            <ColorAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#1500D4FF" Duration="0:0:0.2"/>
+                                                            <ColorAnimation Storyboard.TargetName="CardBorder" 
+                                        Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
+                                        To="#00D4FF" Duration="0:0:0.2"/>
+                                                            <ColorAnimation Storyboard.TargetName="CardBorder" 
+                                        Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" 
+                                        To="#1500D4FF" Duration="0:0:0.2"/>
                                                         </Storyboard>
                                                     </VisualState>
                                                 </VisualStateGroup>
@@ -226,6 +235,7 @@
 
                                             <ContentPresenter />
                                         </Border>
+
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter TargetName="CardBorder" Property="Effect">

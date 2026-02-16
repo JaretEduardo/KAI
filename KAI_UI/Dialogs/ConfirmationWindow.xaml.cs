@@ -18,13 +18,44 @@ namespace KAI_UI.Dialogs
     /// <summary>
     /// Lógica de interacción para ConfirmationWindow.xaml
     /// </summary>
+    public enum ConfirmationType
+    {
+        Danger,
+        Info
+    }
     public partial class ConfirmationWindow : Window
     {
-        public ConfirmationWindow(string message)
+        public ConfirmationWindow(string message, ConfirmationType type = ConfirmationType.Danger, string title = "SYSTEM WARNING", string confirmText = "CONFIRM")
         {
             InitializeComponent();
+
             MessageText.Text = message;
+            TitleText.Text = title;
+            ConfirmBtn.Content = confirmText;
+
+            if (type == ConfirmationType.Info)
+            {
+                ApplyInfoStyle();
+            }
         }
+
+        private void ApplyInfoStyle()
+        {
+            var neonBlue = (Color)ColorConverter.ConvertFromString("#00D4FF");
+            var brushBlue = new SolidColorBrush(neonBlue);
+
+            MainBorder.BorderBrush = brushBlue;
+            MainGlow.Color = neonBlue;
+
+            TitleText.Foreground = brushBlue;
+            TextGlow.Color = neonBlue;
+
+            IconPath.Fill = brushBlue;
+            IconGlow.Color = neonBlue;
+
+            ConfirmBtn.Style = (Style)FindResource("ConfirmButtonStyle");
+        }
+
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -33,14 +64,14 @@ namespace KAI_UI.Dialogs
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
-            this.Close();
+            DialogResult = false;
+            Close();
         }
     }
 }
