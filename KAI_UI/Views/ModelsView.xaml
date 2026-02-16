@@ -141,6 +141,39 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Foreground" Value="#FF4444"/>
+            <Setter Property="BorderBrush" Value="#FF4444"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="18">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#22FF4444"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#FF4444" BlurRadius="15" ShadowDepth="0"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF4444"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="30,20">
@@ -414,7 +447,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" Content="RE-TRAIN" Command="{Binding RetrainCommand}" Style="{StaticResource SecondaryButtonStyle}" Height="40"/>
-                        <Button Grid.Column="2" Content="DELETE" Command="{Binding DeleteModelCommand}" Style="{StaticResource SecondaryButtonStyle}" Height="40"/>
+                        <Button Grid.Column="2" Content="DELETE" Command="{Binding DeleteModelCommand}" Style="{StaticResource DangerButtonStyle}" Height="40"/>
                     </Grid>
                 </StackPanel>
 

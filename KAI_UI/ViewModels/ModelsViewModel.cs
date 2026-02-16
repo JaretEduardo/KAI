@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using KAI_UI.Core;
 using static KAI_UI.ViewModels.TrainingViewModel;
+using KAI_UI.Dialogs;
 
 namespace KAI_UI.ViewModels
 {
@@ -157,21 +158,40 @@ namespace KAI_UI.ViewModels
         {
             if (SelectedModel == null) return;
 
-            var result = MessageBox.Show($"Are you sure you want to delete '{SelectedModel.Name}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.Yes)
+            string msg = $"Permanently delete protocol for neural model:\n\n'{SelectedModel.Name}'\n\nThis action is irreversible. Proceed?";
+
+            var dialog = new ConfirmationWindow(msg);
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
             {
                 try
                 {
                     string modelsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "KAI_Models");
+
                     string modelFolder = Path.Combine(modelsDir, SelectedModel.Name);
 
-                    if (Directory.Exists(modelFolder)) Directory.Delete(modelFolder, true);
+                    if (Directory.Exists(modelFolder))
+                    {
+                        Directory.Delete(modelFolder, true);
+                    }
 
-                    LoadModels();
+                    Models.Remove(SelectedModel);
+
+                    if (Models.Count > 0)
+                        SelectedModel = Models[0];
+                    else
+                    {
+                        SelectedModel = null;
+                        AccPoints = null; AccFillPoints = null;
+                        LossPoints = null; LossFillPoints = null;
+                        HistoryLogs.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error deleting model: " + ex.Message);
+                    MessageBox.Show($"Error deleting model: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
