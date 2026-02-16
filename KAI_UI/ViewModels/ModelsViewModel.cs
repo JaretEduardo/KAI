@@ -194,6 +194,18 @@ namespace KAI_UI.ViewModels
                         LossPoints = null; LossFillPoints = null;
                         HistoryLogs.Clear();
                     }
+
+                    if (Models.Count > 0)
+                        SelectedModel = Models[0];
+                    else
+                    {
+                        SelectedModel = null;
+                        AccPoints = null;
+                        AccFillPoints = null;
+                        LossPoints = null;
+                        LossFillPoints = null;
+                        HistoryLogs.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {

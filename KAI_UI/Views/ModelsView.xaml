@@ -290,177 +290,210 @@
 
         <Border Grid.Column="2" Style="{StaticResource NeonCardStyle}" Padding="30">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedModel}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
 
-                <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Model " Foreground="White" FontSize="18"/>
-                        <TextBlock Text="{Binding SelectedModel.Name}" Foreground="White" FontWeight="Bold" FontSize="18"/>
-                        <TextBlock Text=" - Details" Foreground="White" FontSize="18"/>
-                    </StackPanel>
-                    <TextBlock Text="Performance Metrics" Foreground="#E0E0E0" FontSize="14"/>
+                    <Path Data="M19.07 4.93L17.66 3.53L12 9.17L6.34 3.53L4.93 4.93L10.6 10.6L4.93 16.27L6.34 17.68L12 12.02L17.66 17.68L19.07 16.27L13.41 10.6L19.07 4.93Z"
+                  Fill="#335566" Width="40" Height="40" Stretch="Uniform" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                    <TextBlock Text="NO MODEL SELECTED" Foreground="#335566" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Select a model from the list or train a new one." Foreground="#335566" FontSize="12" Margin="0,5,0,0" HorizontalAlignment="Center"/>
                 </StackPanel>
 
-                <Grid Grid.Row="1" Margin="0,0,0,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="30"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0">
-                        <DockPanel Margin="0,0,0,8">
-                            <TextBlock Text="Accuracy" Foreground="#B0C4DE" FontSize="13"/>
-                            <TextBlock Text="{Binding SelectedModel.Metrics.FinalAccuracy, StringFormat='{}{0:P1}'}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right" FontSize="13"/>
-                        </DockPanel>
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedModel}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
 
-                        <Border Height="80" BorderBrush="#22FFFFFF" BorderThickness="0,0,0,1" Background="#05FFFFFF">
-                            <Grid ClipToBounds="True">
-                                <Path Data="M0,0.5 L1,0.5" Stretch="Fill" Stroke="#11FFFFFF" StrokeThickness="1" StrokeDashArray="2 2" VerticalAlignment="Center"/>
-                                <Viewbox Stretch="Fill">
-                                    <Grid Width="100" Height="100">
-                                        <Polygon Points="{Binding AccFillPoints}" StrokeThickness="0">
-                                            <Polygon.Fill>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                    <GradientStop Color="#4000D4FF" Offset="0"/>
-                                                    <GradientStop Color="#0000D4FF" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Polygon.Fill>
-                                        </Polygon>
-                                        <Polyline Points="{Binding AccPoints}" Stroke="#00D4FF" StrokeThickness="1.5"/>
-                                    </Grid>
-                                </Viewbox>
-                            </Grid>
-                        </Border>
-
-                        <DockPanel Margin="0,4,0,0">
-                            <TextBlock Text="0" Foreground="#556677" FontSize="10"/>
-                            <TextBlock Text="{Binding SelectedModel.Hyperparameters.Epochs}" Foreground="#556677" FontSize="10" HorizontalAlignment="Right"/>
-                        </DockPanel>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2">
-                        <DockPanel Margin="0,0,0,8">
-                            <TextBlock Text="Loss" Foreground="#B0C4DE" FontSize="13"/>
-                            <TextBlock Text="{Binding SelectedModel.Metrics.FinalLoss, StringFormat='{}{0:F3}'}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right" FontSize="13"/>
-                        </DockPanel>
-
-                        <Border Height="80" BorderBrush="#22FFFFFF" BorderThickness="0,0,0,1" Background="#05FFFFFF">
-                            <Grid ClipToBounds="True">
-                                <Path Data="M0,0.5 L1,0.5" Stretch="Fill" Stroke="#11FFFFFF" StrokeThickness="1" StrokeDashArray="2 2" VerticalAlignment="Center"/>
-                                <Viewbox Stretch="Fill">
-                                    <Grid Width="100" Height="100">
-                                        <Polygon Points="{Binding LossFillPoints}" StrokeThickness="0">
-                                            <Polygon.Fill>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                    <GradientStop Color="#408080FF" Offset="0"/>
-                                                    <GradientStop Color="#008080FF" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Polygon.Fill>
-                                        </Polygon>
-                                        <Polyline Points="{Binding LossPoints}" Stroke="#8080FF" StrokeThickness="1.5"/>
-                                    </Grid>
-                                </Viewbox>
-                            </Grid>
-                        </Border>
-
-                        <DockPanel Margin="0,4,0,0">
-                            <TextBlock Text="0" Foreground="#556677" FontSize="10"/>
-                            <TextBlock Text="{Binding SelectedModel.Hyperparameters.Epochs}" Foreground="#556677" FontSize="10" HorizontalAlignment="Right"/>
-                        </DockPanel>
-                    </StackPanel>
-                </Grid>
-
-                <StackPanel Grid.Row="2" Margin="0,0,0,20">
-                    <TextBlock Text="Architecture Overview" Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,15"/>
-                    <Viewbox Height="65" HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Border Width="16" Height="60" BorderBrush="#00D4FF" BorderThickness="1" CornerRadius="3" Background="#1100D4FF" Margin="0,0,8,0">
-                                <TextBlock Text="Conv2D" Foreground="#00D4FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Border>
-                            <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
-
-                            <Border Width="16" Height="40" BorderBrush="#8080FF" BorderThickness="1" CornerRadius="3" Background="#118080FF" Margin="0,0,8,0">
-                                <TextBlock Text="MaxPool" Foreground="#8080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Border>
-                            <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
-
-                            <Border Width="16" Height="50" BorderBrush="#00D4FF" BorderThickness="1" CornerRadius="3" Background="#1100D4FF" Margin="0,0,8,0">
-                                <TextBlock Text="Conv2D" Foreground="#00D4FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Border>
-                            <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
-
-                            <Border Width="16" Height="30" BorderBrush="#8080FF" BorderThickness="1" CornerRadius="3" Background="#118080FF" Margin="0,0,8,0">
-                                <TextBlock Text="MaxPool" Foreground="#8080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Border>
-                            <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
-
-                            <Border Width="12" Height="60" BorderBrush="#B080FF" BorderThickness="1" CornerRadius="3" Background="#11B080FF">
-                                <TextBlock Text="FC" Foreground="#B080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock.LayoutTransform>
-                                        <RotateTransform Angle="-90"/>
-                                    </TextBlock.LayoutTransform>
-                                </TextBlock>
-                            </Border>
-                        </StackPanel>
-                    </Viewbox>
-                </StackPanel>
-
-                <Grid Grid.Row="3" Margin="0,0,0,25">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Training History" Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,8"/>
 
-                    <Border Grid.Row="1" Background="#0A0F16" CornerRadius="8" Padding="5">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
-                            <ItemsControl ItemsSource="{Binding HistoryLogs}" Margin="5">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" Foreground="#4080A0" FontFamily="Consolas" FontSize="11" Margin="0,0,0,3"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Border>
-                </Grid>
+                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="Model " Foreground="White" FontSize="18"/>
+                            <TextBlock Text="{Binding SelectedModel.Name}" Foreground="White" FontWeight="Bold" FontSize="18"/>
+                            <TextBlock Text=" - Details" Foreground="White" FontSize="18"/>
+                        </StackPanel>
+                        <TextBlock Text="Performance Metrics" Foreground="#E0E0E0" FontSize="14"/>
+                    </StackPanel>
 
-                <StackPanel Grid.Row="4">
-                    <Button Content="DEPLOY MODEL" Style="{StaticResource PrimaryButtonStyle}" Height="45" Margin="0,0,0,15"/>
-                    <Grid>
+                    <Grid Grid.Row="1" Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Content="RE-TRAIN" Command="{Binding RetrainCommand}" Style="{StaticResource SecondaryButtonStyle}" Height="40"/>
-                        <Button Grid.Column="2" Content="DELETE" Command="{Binding DeleteModelCommand}" Style="{StaticResource DangerButtonStyle}" Height="40"/>
-                    </Grid>
-                </StackPanel>
 
+                        <StackPanel Grid.Column="0">
+                            <DockPanel Margin="0,0,0,8">
+                                <TextBlock Text="Accuracy" Foreground="#B0C4DE" FontSize="13"/>
+                                <TextBlock Text="{Binding SelectedModel.Metrics.FinalAccuracy, StringFormat='{}{0:P1}'}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right" FontSize="13"/>
+                            </DockPanel>
+
+                            <Border Height="80" BorderBrush="#22FFFFFF" BorderThickness="0,0,0,1" Background="#05FFFFFF">
+                                <Grid ClipToBounds="True">
+                                    <Path Data="M0,0.5 L1,0.5" Stretch="Fill" Stroke="#11FFFFFF" StrokeThickness="1" StrokeDashArray="2 2" VerticalAlignment="Center"/>
+                                    <Viewbox Stretch="Fill">
+                                        <Grid Width="100" Height="100">
+                                            <Polygon Points="{Binding AccFillPoints}" StrokeThickness="0">
+                                                <Polygon.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#4000D4FF" Offset="0"/>
+                                                        <GradientStop Color="#0000D4FF" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Polygon.Fill>
+                                            </Polygon>
+                                            <Polyline Points="{Binding AccPoints}" Stroke="#00D4FF" StrokeThickness="1.5"/>
+                                        </Grid>
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+
+                            <DockPanel Margin="0,4,0,0">
+                                <TextBlock Text="0" Foreground="#556677" FontSize="10"/>
+                                <TextBlock Text="{Binding SelectedModel.Hyperparameters.Epochs}" Foreground="#556677" FontSize="10" HorizontalAlignment="Right"/>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <DockPanel Margin="0,0,0,8">
+                                <TextBlock Text="Loss" Foreground="#B0C4DE" FontSize="13"/>
+                                <TextBlock Text="{Binding SelectedModel.Metrics.FinalLoss, StringFormat='{}{0:F3}'}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Right" FontSize="13"/>
+                            </DockPanel>
+
+                            <Border Height="80" BorderBrush="#22FFFFFF" BorderThickness="0,0,0,1" Background="#05FFFFFF">
+                                <Grid ClipToBounds="True">
+                                    <Path Data="M0,0.5 L1,0.5" Stretch="Fill" Stroke="#11FFFFFF" StrokeThickness="1" StrokeDashArray="2 2" VerticalAlignment="Center"/>
+                                    <Viewbox Stretch="Fill">
+                                        <Grid Width="100" Height="100">
+                                            <Polygon Points="{Binding LossFillPoints}" StrokeThickness="0">
+                                                <Polygon.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#408080FF" Offset="0"/>
+                                                        <GradientStop Color="#008080FF" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Polygon.Fill>
+                                            </Polygon>
+                                            <Polyline Points="{Binding LossPoints}" Stroke="#8080FF" StrokeThickness="1.5"/>
+                                        </Grid>
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+
+                            <DockPanel Margin="0,4,0,0">
+                                <TextBlock Text="0" Foreground="#556677" FontSize="10"/>
+                                <TextBlock Text="{Binding SelectedModel.Hyperparameters.Epochs}" Foreground="#556677" FontSize="10" HorizontalAlignment="Right"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                        <TextBlock Text="Architecture Overview" Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,15"/>
+                        <Viewbox Height="65" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="16" Height="60" BorderBrush="#00D4FF" BorderThickness="1" CornerRadius="3" Background="#1100D4FF" Margin="0,0,8,0">
+                                    <TextBlock Text="Conv2D" Foreground="#00D4FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </Border>
+                                <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                <Border Width="16" Height="40" BorderBrush="#8080FF" BorderThickness="1" CornerRadius="3" Background="#118080FF" Margin="0,0,8,0">
+                                    <TextBlock Text="MaxPool" Foreground="#8080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </Border>
+                                <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                <Border Width="16" Height="50" BorderBrush="#00D4FF" BorderThickness="1" CornerRadius="3" Background="#1100D4FF" Margin="0,0,8,0">
+                                    <TextBlock Text="Conv2D" Foreground="#00D4FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </Border>
+                                <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                <Border Width="16" Height="30" BorderBrush="#8080FF" BorderThickness="1" CornerRadius="3" Background="#118080FF" Margin="0,0,8,0">
+                                    <TextBlock Text="MaxPool" Foreground="#8080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </Border>
+                                <Path Data="M0,0 L4,4 L0,8" Stroke="#445566" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                <Border Width="12" Height="60" BorderBrush="#B080FF" BorderThickness="1" CornerRadius="3" Background="#11B080FF">
+                                    <TextBlock Text="FC" Foreground="#B080FF" FontSize="7" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock.LayoutTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.LayoutTransform>
+                                    </TextBlock>
+                                </Border>
+                            </StackPanel>
+                        </Viewbox>
+                    </StackPanel>
+
+                    <Grid Grid.Row="3" Margin="0,0,0,25">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Training History" Foreground="#E0E0E0" FontSize="14" Margin="0,0,0,8"/>
+
+                        <Border Grid.Row="1" Background="#0A0F16" CornerRadius="8" Padding="5">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+                                <ItemsControl ItemsSource="{Binding HistoryLogs}" Margin="5">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" Foreground="#4080A0" FontFamily="Consolas" FontSize="11" Margin="0,0,0,3"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Grid.Row="4">
+                        <Button Content="DEPLOY MODEL" Style="{StaticResource PrimaryButtonStyle}" Height="45" Margin="0,0,0,15"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="RE-TRAIN" Command="{Binding RetrainCommand}" Style="{StaticResource SecondaryButtonStyle}" Height="40"/>
+
+                            <Button Grid.Column="2" Content="DELETE" Command="{Binding DeleteModelCommand}" Style="{StaticResource DangerButtonStyle}" Height="40"/>
+                        </Grid>
+                    </StackPanel>
+
+                </Grid>
             </Grid>
         </Border>
     </Grid>

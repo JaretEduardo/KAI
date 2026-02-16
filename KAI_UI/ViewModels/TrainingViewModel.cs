@@ -195,6 +195,7 @@ namespace KAI_UI.ViewModels
             public float LearningRate { get; set; }
             public int BaseFilters { get; set; }
             public int HiddenNeurons { get; set; }
+            public bool UseEarlyStopping { get; set; }
         }
 
         public class ModelMetrics
@@ -273,7 +274,8 @@ namespace KAI_UI.ViewModels
                             BatchSize = batch,
                             LearningRate = learningRate,
                             BaseFilters = filters,
-                            HiddenNeurons = neurons
+                            HiddenNeurons = neurons,
+                            UseEarlyStopping = AppSettings.Instance.UseEarlyStopping
                         },
                         Metrics = new ModelMetrics
                         {
@@ -344,6 +346,7 @@ namespace KAI_UI.ViewModels
                 AppSettings.Instance.BatchSize = model.Hyperparameters.BatchSize;
                 AppSettings.Instance.BaseFilters = model.Hyperparameters.BaseFilters;
                 AppSettings.Instance.HiddenNeurons = model.Hyperparameters.HiddenNeurons;
+                AppSettings.Instance.UseEarlyStopping = model.Hyperparameters.UseEarlyStopping;
             }
 
             AppendLog("INFO", $"READY TO RETRAIN: {model.Name} (Settings loaded)");
