@@ -2,7 +2,7 @@ name: Update Lines of Code Badge
 
 on:
   push:
-    branches: [ "development", "main" ]
+    branches: [ "development", "master" ]
   workflow_dispatch:
 
 permissions:
